@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-session_start();
-=======
->>>>>>> 297bf985d2e21ddb1315e979ec52e6512d63ab64
 include("database.php");
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
