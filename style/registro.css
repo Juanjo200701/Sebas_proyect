@@ -14,7 +14,16 @@ body {
   justify-content: center;
   align-items: center;
 }
-
+.error {
+  background: #ffe5e5;
+  color: #c0392b;
+  border: 1px solid #e57373;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-size: 15px;
+  text-align: left;
+}
 .registro-container {
   width: 100%;
   max-width: 450px;

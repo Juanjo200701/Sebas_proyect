@@ -1,4 +1,5 @@
 <?php
+session_start();
 include("database.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $rol = 'member'; // Rol por defecto
             $stmt = $pdo->prepare("INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, ?)");
             if ($stmt->execute([$nombre, $email, $hash, $rol])) {
-                header("Location: index.php");
+                header("Location: login.php");
                 exit();
             } else {
                 $errores[] = 'Error al registrar. Intenta de nuevo.';
@@ -67,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit">Registrarme</button>
         </form>
         <div class="login-link">
-            ¿Ya tienes cuenta? <a href="index.php">Inicia sesión</a>
+            ¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a>
         </div>
     </div>
 </body>

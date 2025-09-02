@@ -5,33 +5,23 @@ include("database.php");
 $errores = [];
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-
-    $email = $_POST['email'] ?? null;
-    $password = $_POST['password'] ?? null;
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
     if ($email && $password) {
-        // Evita inyecciones SQL
-        $email = $conexion->real_escape_string($email);
+        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ?");
+        $stmt->execute([$email]);
+        $usuario = $stmt->fetch();
 
-        // Consulta para buscar el usuario
-        $sql = "SELECT * FROM usuarios WHERE email = '$email'";
-        $resultado = $conexion->query($sql);
-
-        if ($resultado && $resultado->num_rows == 1) {
-            $usuario = $resultado->fetch_assoc();
-
-            // Verifica la contraseña
-            if (password_verify($password, $usuario['password'])) {
-                $_SESSION['usuario_id'] = $usuario['id'];
-                $_SESSION['usuario_email'] = $usuario['email'];
-
-                header("Location: dashboard.html");
-                exit();
-            } else {
-                $errores[] = 'Contraseña incorrecta';
-            }
+        if ($usuario && password_verify($password, $usuario['password'])) {
+            $_SESSION['usuario_id'] = $usuario['id'];
+            $_SESSION['usuario_email'] = $usuario['email'];
+            $_SESSION['usuario_nombre'] = $usuario['nombre'];
+            $_SESSION['usuario_rol'] = $usuario['rol'];
+            header("Location: inicio.php");
+            exit();
         } else {
-            $errores[] = 'No se encontró el usuario';
+            $errores[] = 'Correo o contraseña incorrectos';
         }
     } else {
         $errores[] = 'Por favor, completa todos los campos';
@@ -48,19 +38,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 </head>
 <body>
     <div class="login-container">
-        <form class="login-form">
+        <form class="login-form" method="post">
             <h2>Iniciar Sesión</h2>
             <?php if (!empty($errores)): ?>
             <?php foreach ($errores as $error): ?>
                 <div class="error"><?= htmlspecialchars($error) ?></div>
             <?php endforeach; ?>
             <?php endif; ?>
-            <input type="text" placeholder="Usuario" required>
-            <input type="password" placeholder="Contraseña" required>
+            <input type="email" name="email" placeholder="Correo electrónico" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
             <button type="submit">Entrar</button>
-            <p class="register-text">¿No tienes cuenta? <a href="#">Regístrate</a></p>
+            <p class="register-text">¿No tienes cuenta? <a href="registro.php">Regístrate</a></p>
         </form>
     </div>
 </body>
 </html>
-
