@@ -1,5 +1,8 @@
 <?php
+session_start();
 include("database.php");
+
+$errores = [];
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
@@ -25,13 +28,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 header("Location: dashboard.html");
                 exit();
             } else {
-                echo "<script>alert('Contraseña incorrecta'); window.location.href='index.php';</script>";
+                $errores[] = 'Contraseña incorrecta';
             }
         } else {
-            echo "<script>alert('Correo no encontrado'); window.location.href='index.php';</script>";
+            $errores[] = 'No se encontró el usuario';
         }
     } else {
-        echo "<script>alert('Por favor, completa todos los campos.'); window.location.href='index.php';</script>";
+        $errores[] = 'Por favor, completa todos los campos';
     }
 }
 ?>
@@ -47,6 +50,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <div class="login-container">
         <form class="login-form">
             <h2>Iniciar Sesión</h2>
+            <?php if (!empty($errores)): ?>
+            <?php foreach ($errores as $error): ?>
+                <div class="error"><?= htmlspecialchars($error) ?></div>
+            <?php endforeach; ?>
+            <?php endif; ?>
             <input type="text" placeholder="Usuario" required>
             <input type="password" placeholder="Contraseña" required>
             <button type="submit">Entrar</button>
