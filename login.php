@@ -35,3 +35,24 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     }
 }
 ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="style/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <form class="login-form">
+            <h2>Iniciar Sesión</h2>
+            <input type="text" placeholder="Usuario" required>
+            <input type="password" placeholder="Contraseña" required>
+            <button type="submit">Entrar</button>
+            <p class="register-text">¿No tienes cuenta? <a href="#">Regístrate</a></p>
+        </form>
+    </div>
+</body>
+</html>
+
