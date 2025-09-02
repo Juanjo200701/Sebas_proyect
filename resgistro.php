@@ -59,22 +59,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>nintengames - Register</title>
-    <link rel="stylesheet" href="css/master.css" />
-  </head>
-  <body>
-    <main class="login">
-      <form action="" method="post">
-        <input type="text" name="name" placeholder="Nombre" />
-        <input type="text" name="email" placeholder="Correo Electrónico" />
-        <input type="password" name="password" placeholder="Contraseña" />
-        <button>Registrar</button>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nintengames - Registro</title>
+  <link rel="stylesheet" href="style/registro.css" />
+</head>
+<body>
+  <main class="login">
+    <div class="form-container">
+      <form action="" method="post" class="register-form">
+        <h2>Crear Cuenta</h2>
+        <input type="text" name="name" placeholder="Nombre completo" required />
+        <input type="text" name="email" placeholder="Correo Electrónico" required />
+        <input type="password" name="password" placeholder="Contraseña" required />
+        <input type="password" name="confirm_password" placeholder="Confirmar Contraseña" required />
+        <button type="submit">Registrar</button>
+        <p class="login-text">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
       </form>
-    </main>
-  </body>
+    </div>
+  </main>
+</body>
 </html>
