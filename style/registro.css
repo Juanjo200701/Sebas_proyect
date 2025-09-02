@@ -96,3 +96,20 @@ body {
 .login-text a:hover {
   text-decoration: underline;
 }
+.register-form select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  background: #f9f9f9;
+  transition: 0.3s;
+  color: #333;
+}
+
+.register-form select:focus {
+  border-color: #74ebd5;
+  outline: none;
+  box-shadow: 0 0 5px rgba(116, 235, 213, 0.5);
+}

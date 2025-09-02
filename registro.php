@@ -6,6 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $clave = trim($_POST['password'] ?? '');
+    $rol = $_POST['rol']; // Valor por defecto
 
     $errores = [];
 
@@ -33,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errores[] = 'El correo ya está registrado.';
         } else {
             $hash = password_hash($clave, PASSWORD_DEFAULT);
-            $rol = 'member'; // Rol por defecto
             $stmt = $pdo->prepare("INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, ?)");
             if ($stmt->execute([$nombre, $email, $hash, $rol])) {
                 header("Location: login.php");
@@ -65,9 +65,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="text" name="nombre" placeholder="Nombre completo" value="<?= htmlspecialchars($nombre ?? '') ?>" required>
             <input type="email" name="email" placeholder="Correo electrónico" value="<?= htmlspecialchars($email ?? '') ?>" required>
             <input type="password" name="password" placeholder="Contraseña (mínimo 6 caracteres)" required>
+            <select class='' name="rol" required>
+                <option value="viewer" selected>Viewer</option>
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+            </select>
             <button type="submit">Registrarme</button>
         </form>
-        <div class="login-link">
+        <div class="login-text">
             ¿Ya tienes cuenta? <a href="login.php">Inicia sesión</a>
         </div>
     </div>
