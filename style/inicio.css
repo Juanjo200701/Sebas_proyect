@@ -24,6 +24,10 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 500px;
+  position: relative;
+  top: 10em;
+  right:  5em;
+  
 }
 
 /* Título */
@@ -84,7 +88,7 @@ body {
 }
 
 .task.completed {
-  background-color: #e0f7f1;
+  background-color: #f7e5e0;
   text-decoration: line-through;
   opacity: 0.7;
 }

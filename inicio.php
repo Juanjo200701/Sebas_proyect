@@ -67,7 +67,7 @@ $tareas = $stmt->fetchAll();
         </li>
       <?php endforeach; ?>
     </ul>
-    <a href="logout.php">Cerrar sesión</a>
+    <!-- <a href="logout.php">Cerrar sesión</a> -->
   </main>
 </body>
 </html>
