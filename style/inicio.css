@@ -68,6 +68,36 @@ body {
 .task-form button:hover {
   background-color: #4fd1c5;
 }
+/* Formulario de nueva tarea2 */
+.task-form2 {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.task-form2 input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.task-form2 button {
+  background-color: #74ebd5;
+  border: none;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-weight: bold;
+}
+
+.task-form2 button:hover {
+  background-color: #4fd1c5;
+}
+
 
 /* Lista de tareas */
 .task-list {

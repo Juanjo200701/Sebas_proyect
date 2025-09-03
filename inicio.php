@@ -35,6 +35,46 @@ if (isset($_GET['eliminar'])){
 $stmt = $pdo->prepare("SELECT * FROM tareas WHERE asignado_id = ? ORDER BY creado_en DESC");
 $stmt->execute([$usuario_id]);
 $tareas = $stmt->fetchAll();
+ 
+?>
+
+<?php
+//esto es para poder subir archivos en las tareas
+
+$carpetaDestino = "uploads/";
+
+// Crear la carpeta si no existe
+if (!is_dir($carpetaDestino)) {
+    mkdir($carpetaDestino, 0755, true);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_FILES["archivo"]) && $_FILES["archivo"]["error"] == 0) {
+
+        $nombreArchivo = basename($_FILES["archivo"]["name"]);
+        $rutaDestino = $carpetaDestino . $nombreArchivo;
+
+        // Validación básica (por ejemplo, tamaño y tipo)
+        $tipoArchivo = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
+        $tamanioMaximo = 5 * 1024 * 1024; // 5 MB
+
+        if ($_FILES["archivo"]["size"] > $tamanioMaximo) {
+            echo "El archivo es demasiado grande. Máximo 5MB.";
+        } elseif (!in_array($tipoArchivo, ["jpg", "jpeg", "png", "pdf", "txt"])) {
+            echo "Solo se permiten archivos JPG, PNG, PDF y TXT.";
+        } else {
+            if (move_uploaded_file($_FILES["archivo"]["tmp_name"], $rutaDestino)) {
+                echo "El archivo " . htmlspecialchars($nombreArchivo) . " se ha subido correctamente.";
+            } else {
+                echo "Hubo un error al subir el archivo.";
+            }
+        }
+    } else {
+        echo "No se envió ningún archivo o hubo un error en la subida.";
+    }
+} else {
+    echo "Acceso no permitido.";
+}
 ?>
 
 <!DOCTYPE html>
@@ -53,8 +93,12 @@ $tareas = $stmt->fetchAll();
       <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php endforeach; ?>
     <form class="task-form" method="post">
-      <input type="text" name="titulo" placeholder="Agregar nueva tarea..." required />
+      <input type="text" name="titulo" placeholder="Agregar Nueva Tarea..." required />
       <button type="submit" name="nueva_tarea">Añadir</button>
+    </form>
+    <form class="task-form2" method="post">
+      <input type="text" name="titulo" placeholder="Agregar Unas Subs Tareas..." required />
+      <button type="submit" name="nueva_tarea">Añadir </button>
     </form>
     <ul class="task-list">
       <?php foreach ($tareas as $tarea): ?>
@@ -67,6 +111,10 @@ $tareas = $stmt->fetchAll();
         </li>
       <?php endforeach; ?>
     </ul>
+        Selecciona Un Archivo:
+        <input type="file" name="archivo" required>
+        <br><br>
+        <input type="submit" value="Subir archivo">
     <!-- <a href="logout.php">Cerrar sesión</a> -->
   </main>
 </body>
