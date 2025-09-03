@@ -1,0 +1,39 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  background-color: #000000;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.nav a, .cerrar-sesion {
+  color: white;
+  margin-left: 15px;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+#cerrarSesionBtn{
+    a{
+        color: red;
+    }
+}
+
+
+/* .cerrar-sesion:hover,
+.nav a:hover {
+  text-decoration: underline;
+} */
