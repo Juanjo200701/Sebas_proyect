@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_tarea'])){
 
 if (isset($_GET['completar'])){
   $id = intval($_GET['completar']);
-  $stmt = $pdo->prepare("UPDATE tareas SET estado = 'completado' WHERE id = ? AND asignado_id = ?");
+  $stmt = $pdo->prepare("UPDATE tareas SET estado = 'done' WHERE id = ? AND asignado_id = ?");
   $stmt->execute([$id, $usuario_id]);
 }
 
