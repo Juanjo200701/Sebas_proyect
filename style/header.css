@@ -28,13 +28,14 @@ header
 #cerrarSesionBtn{
     a{
         position: relative;
-        left: 90em;
+        left: 80em;
         color: red;
     }
 }
 .nav{
   a{
-    
+    position: relative;
+    left: 30em;
     color: black;
   }
 }
