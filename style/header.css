@@ -15,7 +15,7 @@ body {
   width: 100%;
   height: 6em;
 }
-
+header
 .nav a, .cerrar-sesion {
   color: black;
   margin-left: 15px;
@@ -26,7 +26,6 @@ body {
   font-size: 16px;
 }
 #cerrarSesionBtn{
-  color: red;
     a{
         position: relative;
         left: 90em;
@@ -35,8 +34,7 @@ body {
 }
 .nav{
   a{
-    /* position: relative; */
-    /* left: 45em;     */
+    
     color: black;
   }
 }

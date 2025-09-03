@@ -26,7 +26,9 @@ body {
   max-width: 500px;
   position: relative;
   top: 10em;
-  right:  5em;
+  /* left:  1em; */
+  justify-content: center;
+  align-items: center;
   
 }
 
