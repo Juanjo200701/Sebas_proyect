@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("database.php");
+include('database.php');
 
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: login.php");
@@ -46,6 +46,7 @@ $tareas = $stmt->fetchAll();
   <link rel="stylesheet" href="style/inicio.css" />
 </head>
 <body>
+  <?php include('header.php'); ?>
   <main class="todo-container">
     <h1>Mis Tareas</h1>
     <?php foreach ($errores as $error): ?>
