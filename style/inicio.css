@@ -24,7 +24,7 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 500px;
-  position: relative;
+  position: fixed;
   top: 10em;
   /* left:  1em; */
   justify-content: center;
