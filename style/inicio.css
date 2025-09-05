@@ -9,7 +9,7 @@
 /* Fondo */
 body {
   background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-  min-height: 100vh;
+  /* min-height: 100vh; */
   display: flex;
   justify-content: center;
   align-items: start;

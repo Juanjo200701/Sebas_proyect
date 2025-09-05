@@ -20,6 +20,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_tarea'])){
   }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_tarea'])){
+  $id = intval($_POST['tarea_id']);
+  $titulo = trim($_POST['titulo'] ?? '');
+  if (empty($titulo)){
+    $errores[] = "El título de la tarea no puede estar vacío.";
+  } else{
+    $stmt = $pdo->prepare("UPDATE tareas SET titulo=? WHERE id=? AND asignado_id=?");
+    $stmt->execute([$titulo, $id, $usuario_id]);
+  }
+}
+
 if (isset($_GET['completar'])){
   $id = intval($_GET['completar']);
   $stmt = $pdo->prepare("UPDATE tareas SET estado = 'done' WHERE id = ? AND asignado_id = ?");
@@ -36,6 +47,58 @@ $stmt = $pdo->prepare("SELECT * FROM tareas WHERE asignado_id = ? ORDER BY cread
 $stmt->execute([$usuario_id]);
 $tareas = $stmt->fetchAll();
  
+
+$tarea_editar = null;
+if (isset($_GET['editar'])){
+  $id = intval($_GET['editar']);
+  $stmt = $pdo->prepare("SELECT * FROM tareas WHERE id = ? AND asignado_id = ?");
+  $stmt->execute([$id, $usuario_id]);
+  $tarea_editar = $stmt->fetch();
+}
+
+//CRUD de subtareas
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_subtarea'])) {
+  $titulo = trim($_POST['titulo'] ?? '');
+  $parent_id = intval($_POST['parent_task_id'] ?? 0);
+  if (empty($titulo) || $parent_id == 0) {
+    $errores[] = "Debes escribir el título y seleccionar la tarea principal.";
+  } else {
+    $stmt = $pdo->prepare("INSERT INTO tareas (titulo, creador_id, asignado_id, estado, parent_task_id) VALUES (?, ?, ?, 'todo', ?)");
+    $stmt->execute([$titulo, $usuario_id, $usuario_id, $parent_id]);
+  }
+}
+
+if (isset($_GET['completar_sub'])) {
+  $id = intval($_GET['completar_sub']);
+  $stmt = $pdo->prepare("UPDATE tareas SET estado = 'done' WHERE id = ? AND asignado_id = ?");
+  $stmt->execute([$id, $usuario_id]);
+}
+
+// Eliminar subtarea
+if (isset($_GET['eliminar_sub'])) {
+  $id = intval($_GET['eliminar_sub']);
+  $stmt = $pdo->prepare("DELETE FROM tareas WHERE id = ? AND asignado_id = ?");
+  $stmt->execute([$id, $usuario_id]);
+}
+
+$subtarea_editar = null;
+if (isset($_GET['editar_sub'])) {
+  $id = intval($_GET['editar_sub']);
+  $stmt = $pdo->prepare("SELECT * FROM tareas WHERE id = ? AND asignado_id = ?");
+  $stmt->execute([$id, $usuario_id]);
+  $subtarea_editar = $stmt->fetch();
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_subtarea'])) {
+  $id = intval($_POST['subtarea_id']);
+  $titulo = trim($_POST['titulo'] ?? '');
+  if (empty($titulo)) {
+    $errores[] = "El título de la subtarea no puede estar vacío.";
+  } else {
+    $stmt = $pdo->prepare("UPDATE tareas SET titulo=? WHERE id=? AND asignado_id=?");
+    $stmt->execute([$titulo, $id, $usuario_id]);
+  }
+}
 ?>
 
 <?php
@@ -75,6 +138,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 } else {
     echo "Acceso no permitido.";
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -92,22 +156,65 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php foreach ($errores as $error): ?>
       <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php endforeach; ?>
+    <?php if ($subtarea_editar): ?>
+      <form class="task-form2" method="post">
+        <input type="hidden" name="subtarea_id" value="<?= $subtarea_editar['id'] ?>">
+        <input type="text" name="titulo" placeholder="Editar subtarea..." required value="<?= htmlspecialchars($subtarea_editar['titulo']) ?>" />
+        <button type="submit" name="editar_subtarea">Guardar cambios</button>
+        <a href="inicio.php">Cancelar</a>
+      </form>
+    <?php endif; ?>
+    <?php if ($tarea_editar): ?>
+      <form class="task-form" method="post">
+        <input type="hidden" name="tarea_id" value="<?= $tarea_editar['id'] ?>">
+        <input type="text" name="titulo" placeholder="Editar título..." required value="<?= htmlspecialchars($tarea_editar['titulo']) ?>" />
+        <button type="submit" name="editar_tarea">Guardar cambios</button>
+        <a href="inicio.php">Cancelar</a>
+      </form>
+    <?php else: ?>
     <form class="task-form" method="post">
-      <input type="text" name="titulo" placeholder="Agregar Nueva Tarea..." required />
+      <input type="text" name="titulo" placeholder="Agregar Nueva Tarea..." />
       <button type="submit" name="nueva_tarea">Añadir</button>
     </form>
+    <?php endif; ?>
     <form class="task-form2" method="post">
-      <input type="text" name="titulo" placeholder="Agregar Unas Subs Tareas..." required />
-      <button type="submit" name="nueva_tarea">Añadir </button>
+      <select name="parent_task_id" required>
+        <option value="">Selecciona tarea principal</option>
+      <?php foreach ($tareas as $tarea): ?>
+        <option value="<?= $tarea['id'] ?>"><?= htmlspecialchars($tarea['titulo']) ?></option>
+      <?php endforeach; ?>
+      </select>
+      <input type="text" name="titulo" placeholder="Agregar una Subtarea..." required />
+      <button type="submit" name="nueva_subtarea">Añadir</button>
     </form>
     <ul class="task-list">
       <?php foreach ($tareas as $tarea): ?>
         <li class="task<?= $tarea['estado'] === 'done' ? ' completed' : '' ?>">
           <?= htmlspecialchars($tarea['titulo']) ?>
+          <a href="?editar=<?= $tarea['id'] ?>">Editar</a>
           <?php if ($tarea['estado'] !== 'done'): ?>
             <a href="?completar=<?= $tarea['id'] ?>">Completar</a>
           <?php endif; ?>
           <a href="?eliminar=<?= $tarea['id'] ?>" onclick="return confirm('¿Eliminar tarea?')">Eliminar</a>
+          <?php
+            $stmt_sub = $pdo->prepare("SELECT * FROM tareas WHERE parent_task_id = ?");
+            $stmt_sub->execute([$tarea['id']]);
+            $subtareas = $stmt_sub->fetchAll();
+            if ($subtareas):
+          ?>
+            <ul class="subtask-list">
+              <?php foreach ($subtareas as $sub): ?>
+                <li class="subtask<?= $sub['estado'] === 'done' ? ' completed' : '' ?>">
+                  <?= htmlspecialchars($sub['titulo']) ?>
+                  <?php if ($sub['estado'] !== 'done'): ?>
+                    <a href="?completar_sub=<?= $sub['id'] ?>">Completar</a>
+                 <?php endif; ?>
+                  <a href="?editar_sub=<?= $sub['id'] ?>">Editar</a>
+                  <a href="?eliminar_sub=<?= $sub['id'] ?>" onclick="return confirm('¿Eliminar subtarea?')">Eliminar</a>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          <?php endif; ?>
         </li>
       <?php endforeach; ?>
     </ul>
