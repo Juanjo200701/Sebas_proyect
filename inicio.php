@@ -9,6 +9,7 @@ if (!isset($_SESSION['usuario_id'])) {
 
 $usuario_id = $_SESSION['usuario_id'];
 $errores = [];
+$mensaje = "";
 
 // --- CRUD TAREAS ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_tarea'])) {
@@ -45,7 +46,7 @@ if (isset($_GET['eliminar'])) {
 }
 
 // Consultar tareas
-$stmt = $pdo->prepare("SELECT * FROM tareas WHERE asignado_id = ? ORDER BY creado_en DESC");
+$stmt = $pdo->prepare("SELECT * FROM tareas WHERE asignado_id = ? AND parent_task_id IS NULL ORDER BY creado_en DESC");
 $stmt->execute([$usuario_id]);
 $tareas = $stmt->fetchAll();
 
@@ -106,30 +107,49 @@ if (!is_dir($carpetaDestino)) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
-    if (isset($_FILES["archivo"]) && $_FILES["archivo"]["error"] == 0) {
-        $nombreArchivo = basename($_FILES["archivo"]["name"]);
-        $rutaDestino = $carpetaDestino . $nombreArchivo;
-
-        $tipoArchivo = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
-        $tamanioMaximo = 5 * 1024 * 1024; // 5MB
-
-        if ($_FILES["archivo"]["size"] > $tamanioMaximo) {
-            $errores[] = "El archivo es demasiado grande. Máximo 5MB.";
-        } elseif (!in_array($tipoArchivo, ["jpg", "jpeg", "png", "pdf", "txt"])) {
-            $errores[] = "Solo se permiten archivos JPG, PNG, PDF y TXT.";
-        } else {
-            if (move_uploaded_file($_FILES["archivo"]["tmp_name"], $rutaDestino)) {
-                $mensaje = "El archivo " . htmlspecialchars($nombreArchivo) . " se ha subido correctamente.";
-            } else {
-                $errores[] = "Hubo un error al subir el archivo.";
-            }
-        }
+    $tarea_id = intval($_POST["tarea_id"] ?? 0);
+    if ($tarea_id <= 0) {
+        $errores[] = "Debes asociar el archivo a una tarea válida.";
     } else {
-        $errores[] = "No se envió ningún archivo o hubo un error en la subida.";
+        if (isset($_FILES["archivo"]) && $_FILES["archivo"]["error"] == 0) {
+            // Nombre único para evitar sobrescribir
+            $nombreArchivo = time() . "_" . basename($_FILES["archivo"]["name"]);
+            $rutaDestino = $carpetaDestino . $nombreArchivo;
+
+            // Validaciones
+            $tipoArchivo = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
+            $tamanioMaximo = 5 * 1024 * 1024; // 5MB
+
+            if ($_FILES["archivo"]["size"] > $tamanioMaximo) {
+                $errores[] = "El archivo es demasiado grande. Máximo 5MB.";
+            } elseif (!in_array($tipoArchivo, ["jpg", "jpeg", "png", "pdf", "txt"])) {
+                $errores[] = "Solo se permiten archivos JPG, PNG, PDF y TXT.";
+            } else {
+                if (move_uploaded_file($_FILES["archivo"]["tmp_name"], $rutaDestino)) {
+                    // Guardar en BD con las columnas correctas
+                    $stmt = $pdo->prepare("
+                        INSERT INTO adjuntos (tarea_id, nombre_archivo, ruta, subido_por) 
+                        VALUES (?, ?, ?, ?)
+                    ");
+                    $stmt->execute([
+                        $tarea_id,
+                        $nombreArchivo,
+                        $rutaDestino,
+                        $_SESSION['usuario_id'] ?? null // ID del usuario logueado
+                    ]);
+
+                    $mensaje = "El archivo " . htmlspecialchars($nombreArchivo) . " se ha subido correctamente.";
+                } else {
+                    $errores[] = "Hubo un error al mover el archivo al servidor.";
+                }
+            }
+        } else {
+            $errores[] = "No se envió ningún archivo o hubo un error en la subida.";
+        }
     }
 }
-?>
 
+?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -149,7 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php endforeach; ?>
 
-    <!-- Mensaje de subida de archivos -->
+    <!-- Mensaje -->
     <?php if (!empty($mensaje)): ?>
       <div class="success"><?= htmlspecialchars($mensaje) ?></div>
     <?php endif; ?>
@@ -158,7 +178,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
     <?php if ($subtarea_editar): ?>
       <form class="task-form2" method="post">
         <input type="hidden" name="subtarea_id" value="<?= $subtarea_editar['id'] ?>">
-        <input type="text" name="titulo" placeholder="Editar subtarea..." required value="<?= htmlspecialchars($subtarea_editar['titulo']) ?>" />
+        <input type="text" name="titulo" required value="<?= htmlspecialchars($subtarea_editar['titulo']) ?>" />
         <button type="submit" name="editar_subtarea">Guardar cambios</button>
         <a href="inicio.php">Cancelar</a>
       </form>
@@ -168,7 +188,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
     <?php if ($tarea_editar): ?>
       <form class="task-form" method="post">
         <input type="hidden" name="tarea_id" value="<?= $tarea_editar['id'] ?>">
-        <input type="text" name="titulo" placeholder="Editar título..." required value="<?= htmlspecialchars($tarea_editar['titulo']) ?>" />
+        <input type="text" name="titulo" required value="<?= htmlspecialchars($tarea_editar['titulo']) ?>" />
         <button type="submit" name="editar_tarea">Guardar cambios</button>
         <a href="inicio.php">Cancelar</a>
       </form>
@@ -199,10 +219,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
           <?= htmlspecialchars($tarea['titulo']) ?>
           <a href="?editar=<?= $tarea['id'] ?>" class="btn-editar">Editar</a>
           <?php if ($tarea['estado'] !== 'done'): ?>
-            <a href="?completar=<?= $tarea['id'] ?>"class="btn-completar">Completar</a>
+            <a href="?completar=<?= $tarea['id'] ?>" class="btn-completar">Completar</a>
           <?php endif; ?>
           <a href="?eliminar=<?= $tarea['id'] ?>" class="btn-eliminar">Eliminar</a>
 
+          <!-- Subtareas -->
           <?php
             $stmt_sub = $pdo->prepare("SELECT * FROM tareas WHERE parent_task_id = ?");
             $stmt_sub->execute([$tarea['id']]);
@@ -222,18 +243,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
               <?php endforeach; ?>
             </ul>
           <?php endif; ?>
+
+          <!-- Adjuntos -->
+          <?php
+            $stmt_adj = $pdo->prepare("SELECT * FROM adjuntos WHERE tarea_id = ?");
+            $stmt_adj->execute([$tarea['id']]);
+            $adjuntos = $stmt_adj->fetchAll();
+            if ($adjuntos):
+          ?>
+            <ul class="attachments">
+              <?php foreach ($adjuntos as $adj): ?>
+                <li>
+                  <a href="uploads/<?= htmlspecialchars($adj['archivo']) ?>" target="_blank">
+                    <?= htmlspecialchars($adj['archivo']) ?>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          <?php endif; ?>
+
+          <!-- Formulario subida de archivos por tarea -->
+          <form method="post" enctype="multipart/form-data" class="upload-form">
+            <input type="hidden" name="tarea_id" value="<?= $tarea['id'] ?>">
+            <input type="file" name="archivo" required>
+            <button type="submit" name="subir_archivo">Subir archivo</button>
+          </form>
         </li>
       <?php endforeach; ?>
     </ul>
-
-    <!-- Formulario subida de archivos -->
-    <form method="post" enctype="multipart/form-data" class="upload-form">
-      <label>Selecciona un archivo:</label>
-      <input type="file" name="archivo" required>
-      <button type="submit" name="subir_archivo">Subir archivo</button>
-    </form>
-
-    <!-- <a href="logout.php">Cerrar sesión</a> -->
   </main>
 </body>
 </html>
