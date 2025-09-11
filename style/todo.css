@@ -70,11 +70,25 @@ body {
   max-width: 90%;
   position: fixed;
   top: 15%;
+
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+
+  max-height: 80vh;       /* 👈 asegura que nunca pase de la pantalla */
+  overflow-y: auto;       /* 👈 permite hacer scroll si hay muchas tareas */
 }
+
+/* lista de tareas */
+.task-list {
+  list-style: none;
+  width: 100%;
+  max-height: 60vh;       /* 👈 altura máxima solo para la lista */
+  overflow-y: auto;       /* 👈 scroll independiente */
+  padding-right: 0.5rem;  /* 👈 deja espacio para el scrollbar */
+}
+
 
 .todo-container h1 {
   text-align: center;
@@ -114,15 +128,6 @@ body {
 .task-form button:hover,
 .task-form2 button:hover {
   background-color: #4fd1c5;
-}
-
-.task-list {
-  list-style: none;
-  max-height: 60%;
-  overflow-y: auto;
-  padding-right: 1%;
-  
-
 }
 
 /*boton de editar*/
@@ -388,3 +393,5 @@ body {
 .login-text a:hover {
   text-decoration: underline;
 }
+
+/*PROYECTOS*/
