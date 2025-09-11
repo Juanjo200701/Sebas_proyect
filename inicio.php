@@ -235,10 +235,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
                 <li class="subtask<?= $sub['estado'] === 'done' ? ' completed' : '' ?>">
                   <?= htmlspecialchars($sub['titulo']) ?>
                   <?php if ($sub['estado'] !== 'done'): ?>
-                    <a href="?completar_sub=<?= $sub['id'] ?>">Completar</a>
+                    <a href="?completar_sub=<?= $sub['id'] ?>" class="btn-sub-completar">Completar</a>
                   <?php endif; ?>
-                  <a href="?editar_sub=<?= $sub['id'] ?>">Editar</a>
-                  <a href="?eliminar_sub=<?= $sub['id'] ?>" onclick="return confirm('¿Eliminar subtarea?')">Eliminar</a>
+                  <a href="?editar_sub=<?= $sub['id'] ?>" class="btn-sub-editar">Editar</a>
+                  <a href="?eliminar_sub=<?= $sub['id'] ?>" class="btn-sub-eliminar">Eliminar</a>
                 </li>
               <?php endforeach; ?>
             </ul>

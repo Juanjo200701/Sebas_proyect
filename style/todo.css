@@ -83,7 +83,7 @@ body {
 /* lista de tareas */
 .task-list {
   list-style: none;
-  width: 100%;
+  width: 80%;
   max-height: 60vh;       /* 👈 altura máxima solo para la lista */
   overflow-y: auto;       /* 👈 scroll independiente */
   padding-right: 0.5rem;  /* 👈 deja espacio para el scrollbar */
@@ -185,21 +185,135 @@ body {
   background-color: #ff2e2e;
 }
 
+/*sub tareas botones*/
+.btn-sub-completar {
+  display: inline-block;
+  width: 25%;                /* ancho relativo al contenedor */
+  padding: 1% 3%;            /* alto y ancho del relleno en % */
+  background-color: #4fd1c5;
+  color: #fff;
+  font-weight: bold;
+  font-size: 100%;           /* tamaño de letra relativo */
+  text-align: center;        /* centra el texto */
+  text-decoration: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-sub-completar:hover {
+  background-color: #38b2ac;
+  transform: scale(1.05);
+}
+
+.btn-sub-completar:active {
+  transform: scale(0.95);
+}
+ /*editar*/
+ .btn-sub-editar {
+  display: inline-block;
+  width: 25%;                /* ancho relativo al contenedor */
+  padding: 1% 3%;            /* alto y ancho del relleno en % */
+  background-color: #4fd1c5;
+  color: #fff;
+  font-weight: bold;
+  font-size: 100%;           /* tamaño de letra relativo */
+  text-align: center;        /* centra el texto */
+  text-decoration: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-sub-editar:hover {
+  background-color: #38b2ac;
+  transform: scale(1.05);
+}
+
+.btn-sub-editar:active {
+  transform: scale(0.95);
+} 
+/*eliminar*/
+.btn-sub-eliminar {
+  display: inline-block;
+  width: 25%;                /* ancho relativo al contenedor */
+  padding: 1% 3%;            /* alto y ancho del relleno en % */
+  background-color: #ff6b6b;
+  color: #fff;
+  font-weight: bold;
+  font-size: 100%;           /* tamaño de letra relativo */
+  text-align: center;        /* centra el texto */
+  text-decoration: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  
+}
+
+.btn-sub-eliminar:hover {
+  background-color: #ff2e2e;
+  transform: scale(1.05);
+}
+
+.btn-sub-eliminar:active {
+  transform: scale(0.95);
+}
+
 .task {
   background-color: #ffffff;
-  width: 100%;              /* que ocupe todo el contenedor padre */
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  width: 100%;
+  padding: 0.6rem 1rem;     /* menos padding */
+  border-radius: 10px;
+  margin-bottom: 0.6rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;          /* permite que los botones bajen de línea si no caben */
-  overflow: visible;        /* asegura que nada se corte */
+  gap: 0.6rem;
+  flex-wrap: wrap;
 }
+
+.task-text {
+  flex: 1;
+  color: #333;
+  font-size: 0.9rem;        /* texto más pequeño */
+}
+
+/* Botones */
+.task button,
+.task a {
+  border: none;
+  padding: 0.3rem 0.6rem;   /* botones más compactos */
+  border-radius: 6px;
+  font-size: 0.8rem;        /* texto de botones más pequeño */
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+/* Colores */
+.btn-editar,
+.btn-completar {
+  background-color: #4fd1c5;
+  color: white;
+}
+.btn-editar:hover,
+.btn-completar:hover {
+  background-color: #38b2ac;
+}
+
+.btn-eliminar {
+  background-color: #ff6b6b;
+  color: white;
+}
+.btn-eliminar:hover {
+  background-color: #ff2e2e;
+}
+
+
+
 
 .task button {
   border: none;
@@ -211,16 +325,10 @@ body {
   white-space: nowrap;      /* evita que el texto del botón se parta */
 }
 
-
 .task.completed {
   background-color: #f7e5e0;
   text-decoration: line-through;
   opacity: 0.7;
-}
-
-.task-text {
-  flex: 1;
-  color: #333;
 }
 
 .task-actions button {
