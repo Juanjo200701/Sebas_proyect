@@ -56,7 +56,7 @@ if (isset($_GET['editar'])){
 <head>
     <meta charset="UTF-8">
     <title>Proyectos</title>
-    <link rel="stylesheet" href="style/proyectos.css">
+    <link rel="stylesheet" href="style/todo.css">
 </head>
 <body>
     <?php include('header.php'); ?>
