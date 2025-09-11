@@ -254,8 +254,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
             <ul class="attachments">
               <?php foreach ($adjuntos as $adj): ?>
                 <li>
-                  <a href="uploads/<?= htmlspecialchars($adj['archivo']) ?>" target="_blank">
-                    <?= htmlspecialchars($adj['archivo']) ?>
+                  <a href="uploads/<?= htmlspecialchars($adj['ruta']) ?>" target="_blank">
+                    <?= htmlspecialchars($adj['nombre_archivo']) ?>
                   </a>
                 </li>
               <?php endforeach; ?>
