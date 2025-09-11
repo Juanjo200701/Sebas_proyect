@@ -121,18 +121,91 @@ body {
   max-height: 60%;
   overflow-y: auto;
   padding-right: 1%;
+  
+
+}
+
+/*boton de editar*/
+.btn-editar {
+  display: inline-block;
+  padding: 2% 4%;
+  background-color: #74ebd5;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 100%;
+  transition: background 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-editar:hover {
+  background-color: #4fd1c5;
+}
+/*boton de completar*/
+.btn-completar {
+  display: inline-block;
+  padding: 2% 4%;
+  background-color: #74ebd5;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 100%;
+  transition: background 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-completar:hover {
+  background-color: #4fd1c5;
+}
+/*boton de eliminar*/
+.btn-eliminar {
+  display: inline-block;
+  padding: 2% 4%;
+  background-color: #ff6b6b;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 100%;
+  transition: background 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-eliminar:hover {
+  background-color: #ff2e2e;
 }
 
 .task {
-  background-color: #f9f9f9;
-  padding: 3%;
-  border-radius: 8px;
-  margin-bottom: 2%;
+  background-color: #ffffff;
+  width: 100%;              /* que ocupe todo el contenedor padre */
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background 0.3s;
+  gap: 1rem;
+  flex-wrap: wrap;          /* permite que los botones bajen de línea si no caben */
+  overflow: visible;        /* asegura que nada se corte */
 }
+
+.task button {
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;      /* evita que el texto del botón se parta */
+}
+
 
 .task.completed {
   background-color: #f7e5e0;

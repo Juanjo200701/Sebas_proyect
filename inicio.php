@@ -197,11 +197,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       <?php foreach ($tareas as $tarea): ?>
         <li class="task<?= $tarea['estado'] === 'done' ? ' completed' : '' ?>">
           <?= htmlspecialchars($tarea['titulo']) ?>
-          <a href="?editar=<?= $tarea['id'] ?>">Editar</a>
+          <a href="?editar=<?= $tarea['id'] ?>" class="btn-editar">Editar</a>
           <?php if ($tarea['estado'] !== 'done'): ?>
-            <a href="?completar=<?= $tarea['id'] ?>">Completar</a>
+            <a href="?completar=<?= $tarea['id'] ?>"class="btn-completar">Completar</a>
           <?php endif; ?>
-          <a href="?eliminar=<?= $tarea['id'] ?>" onclick="return confirm('¿Eliminar tarea?')">Eliminar</a>
+          <a href="?eliminar=<?= $tarea['id'] ?>" class="btn-eliminar">Eliminar</a>
 
           <?php
             $stmt_sub = $pdo->prepare("SELECT * FROM tareas WHERE parent_task_id = ?");
