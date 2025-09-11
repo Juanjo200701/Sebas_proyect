@@ -17,7 +17,7 @@ body {
 }
 header
 .nav a, .cerrar-sesion {
-  color: black;
+  color: rgb(9, 9, 9);
   margin-left: 15px;
   text-decoration: none;
   background: none;
