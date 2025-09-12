@@ -58,7 +58,7 @@ if (isset($_GET['editar'])){
 <head>
     <meta charset="UTF-8">
     <title>Etiquetas</title>
-    <link rel="stylesheet" href="style/etiquetas.css">
+    <link rel="stylesheet" href="style/todo.css">
 </head>
 <body>
     <!-- <?php include('header.php'); ?> -->
@@ -85,8 +85,8 @@ if (isset($_GET['editar'])){
                 <li>
                     <span style="display:inline-block;width:16px;height:16px;background:<?= htmlspecialchars($etiqueta['color']) ?>;border-radius:3px;margin-right:8px;vertical-align:middle;"></span>
                     <strong><?= htmlspecialchars($etiqueta['nombre']) ?></strong>
-                    <a href="?editar=<?= $etiqueta['id'] ?>">Editar</a>
-                    <a href="?eliminar=<?= $etiqueta['id'] ?>" onclick="return confirm('¿Eliminar esta etiqueta?')">Eliminar</a>
+                        <a href="?editar=<?= $etiqueta['id'] ?>"class="btn-etiqueta-editar">Editar</a>
+                        <a href="?eliminar=<?= $etiqueta['id'] ?>"class="btn-etiqueta-eliminar">Eliminar</a>
                 </li>
             <?php endforeach; ?>
         </ul>
