@@ -148,6 +148,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         }
     }
 }
+// $stmt = $pdo->query("SELECT * FROM etiquetas");
+// $etiquetas = $stmt->fetchAll();
 
 ?>
 
@@ -199,6 +201,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         <button type="submit" name="nueva_tarea">Añadir</button>
       </form>
     <?php endif; ?>
+
+    <!-- <label for="etiqueta_id">Etiqueta:</label>
+  <select name="etiqueta_id">
+    <option value="">Sin etiqueta</option>
+    <?php foreach ($etiquetas as $etiqueta): ?>
+      <option value="<?= $etiqueta['id'] ?>">
+        <?= htmlspecialchars($etiqueta['nombre']) ?>
+      </option>
+    <?php endforeach; ?>
+  </select> -->
 
     <!-- Formulario nueva subtarea -->
     <form class="task-form2" method="post">
