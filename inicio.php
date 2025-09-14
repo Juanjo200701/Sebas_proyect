@@ -11,25 +11,47 @@ $usuario_id = $_SESSION['usuario_id'];
 $errores = [];
 $mensaje = "";
 
+// --- Consultar todas las etiquetas (antes del HTML) ---
+$stmtEtiquetas = $pdo->query("SELECT id, nombre, color FROM etiquetas ORDER BY nombre ASC");
+$etiquetas = $stmtEtiquetas->fetchAll(PDO::FETCH_ASSOC);
+
 // --- CRUD TAREAS ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_tarea'])) {
     $titulo = trim($_POST['titulo'] ?? '');
+    $etiquetas_sel = $_POST['etiquetas'] ?? [];
+
     if (empty($titulo)) {
         $errores[] = "El título de la tarea no puede estar vacío.";
     } else {
         $stmt = $pdo->prepare("INSERT INTO tareas (titulo, creador_id, asignado_id, estado) VALUES (?, ?, ?, 'todo')");
         $stmt->execute([$titulo, $usuario_id, $usuario_id]);
+        $tarea_id = $pdo->lastInsertId();
+
+        // vincular etiquetas si existen
+        foreach ($etiquetas_sel as $etiqueta_id) {
+            $stmtEtiquetasIns = $pdo->prepare("INSERT INTO tarea_etiqueta (tarea_id, etiqueta_id) VALUES (?, ?)");
+            $stmtEtiquetasIns->execute([$tarea_id, intval($etiqueta_id)]);
+        }
     }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_tarea'])) {
     $id = intval($_POST['tarea_id']);
     $titulo = trim($_POST['titulo'] ?? '');
+    $etiquetas_sel = $_POST['etiquetas'] ?? [];
+
     if (empty($titulo)) {
         $errores[] = "El título de la tarea no puede estar vacío.";
     } else {
         $stmt = $pdo->prepare("UPDATE tareas SET titulo=? WHERE id=? AND asignado_id=?");
         $stmt->execute([$titulo, $id, $usuario_id]);
+
+        // actualizar etiquetas: borrar las anteriores y volver a insertar
+        $pdo->prepare("DELETE FROM tarea_etiqueta WHERE tarea_id=?")->execute([$id]);
+        foreach ($etiquetas_sel as $etiqueta_id) {
+            $stmtEtiquetasIns = $pdo->prepare("INSERT INTO tarea_etiqueta (tarea_id, etiqueta_id) VALUES (?, ?)");
+            $stmtEtiquetasIns->execute([$id, intval($etiqueta_id)]);
+        }
     }
 }
 
@@ -45,17 +67,24 @@ if (isset($_GET['eliminar'])) {
     $stmt->execute([$id, $usuario_id]);
 }
 
-// Consultar tareas
+// Consultar tareas (solo top-level)
 $stmt = $pdo->prepare("SELECT * FROM tareas WHERE asignado_id = ? AND parent_task_id IS NULL ORDER BY creado_en DESC");
 $stmt->execute([$usuario_id]);
 $tareas = $stmt->fetchAll();
 
 $tarea_editar = null;
+$etiquetas_tarea = [];
 if (isset($_GET['editar'])) {
     $id = intval($_GET['editar']);
     $stmt = $pdo->prepare("SELECT * FROM tareas WHERE id = ? AND asignado_id = ?");
     $stmt->execute([$id, $usuario_id]);
     $tarea_editar = $stmt->fetch();
+
+    if ($tarea_editar) {
+        $stmt = $pdo->prepare("SELECT etiqueta_id FROM tarea_etiqueta WHERE tarea_id=?");
+        $stmt->execute([$tarea_editar['id']]);
+        $etiquetas_tarea = array_column($stmt->fetchAll(), 'etiqueta_id');
+    }
 }
 
 // --- CRUD SUBTAREAS ---
@@ -112,13 +141,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         $errores[] = "Debes asociar el archivo a una tarea válida.";
     } else {
         if (isset($_FILES["archivo"]) && $_FILES["archivo"]["error"] == 0) {
-            // Nombre único para evitar sobrescribir
             $nombreArchivo = time() . "_" . basename($_FILES["archivo"]["name"]);
             $rutaDestino = $carpetaDestino . $nombreArchivo;
 
-            // Validaciones
             $tipoArchivo = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
-            $tamanioMaximo = 5 * 1024 * 1024; // 5MB
+            $tamanioMaximo = 5 * 1024 * 1024;
 
             if ($_FILES["archivo"]["size"] > $tamanioMaximo) {
                 $errores[] = "El archivo es demasiado grande. Máximo 5MB.";
@@ -126,7 +153,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
                 $errores[] = "Solo se permiten archivos JPG, PNG, PDF y TXT.";
             } else {
                 if (move_uploaded_file($_FILES["archivo"]["tmp_name"], $rutaDestino)) {
-                    // Guardar en BD con las columnas correctas
                     $stmt = $pdo->prepare("
                         INSERT INTO adjuntos (tarea_id, nombre_archivo, ruta, subido_por) 
                         VALUES (?, ?, ?, ?)
@@ -135,7 +161,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
                         $tarea_id,
                         $nombreArchivo,
                         $rutaDestino,
-                        $_SESSION['usuario_id'] ?? null // ID del usuario logueado
+                        $_SESSION['usuario_id'] ?? null
                     ]);
 
                     $mensaje = "El archivo " . htmlspecialchars($nombreArchivo) . " se ha subido correctamente.";
@@ -148,9 +174,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         }
     }
 }
-// $stmt = $pdo->query("SELECT * FROM etiquetas");
-// $etiquetas = $stmt->fetchAll();
-
 ?>
 
 <!DOCTYPE html>
@@ -160,18 +183,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestor de Tareas</title>
   <link rel="stylesheet" href="style/todo.css" />
+  <!-- FIX CSS rápido para que los <select> dentro de los formularios flex se vean correctamente -->
+  <style>
+    .task-form input, .task-form select,
+    .task-form2 input, .task-form2 select {
+      flex: 1;
+      padding: 3% 4%;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 100%;
+      background: #fff;
+      color: #333;
+      min-width: 160px;
+    }
+    /* Si usas multiple, poner tamaño razonable */
+    .task-form select[multiple], .task-form2 select[multiple] {
+      min-height: 80px;
+    }
+  </style>
 </head>
 <body>
   <?php include('header.php'); ?>
   <main class="todo-container">
     <h1>Mis Tareas</h1>
 
-    <!-- Errores -->
     <?php foreach ($errores as $error): ?>
       <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php endforeach; ?>
 
-    <!-- Mensaje -->
     <?php if (!empty($mensaje)): ?>
       <div class="success"><?= htmlspecialchars($mensaje) ?></div>
     <?php endif; ?>
@@ -191,6 +230,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       <form class="task-form" method="post">
         <input type="hidden" name="tarea_id" value="<?= $tarea_editar['id'] ?>">
         <input type="text" name="titulo" required value="<?= htmlspecialchars($tarea_editar['titulo']) ?>" />
+
+        <label for="etiquetas_editar">Etiquetas:</label>
+        <select name="etiquetas[]" id="etiquetas_editar" multiple>
+          <?php foreach ($etiquetas as $etiqueta): ?>
+            <option value="<?= $etiqueta['id'] ?>" <?= in_array($etiqueta['id'], $etiquetas_tarea) ? 'selected' : '' ?>>
+              <?= htmlspecialchars($etiqueta['nombre']) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+
         <button type="submit" name="editar_tarea">Guardar cambios</button>
         <a href="inicio.php">Cancelar</a>
       </form>
@@ -198,19 +247,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       <!-- Formulario nueva tarea -->
       <form class="task-form" method="post">
         <input type="text" name="titulo" placeholder="Agregar Nueva Tarea..." />
+
+        <label for="etiquetas_nueva">Etiquetas:</label>
+        <select name="etiquetas[]" id="etiquetas_nueva" multiple>
+          <?php foreach ($etiquetas as $etiqueta): ?>
+            <option value="<?= $etiqueta['id'] ?>"><?= htmlspecialchars($etiqueta['nombre']) ?></option>
+          <?php endforeach; ?>
+        </select>
+
         <button type="submit" name="nueva_tarea">Añadir</button>
       </form>
     <?php endif; ?>
-
-    <!-- <label for="etiqueta_id">Etiqueta:</label>
-  <select name="etiqueta_id">
-    <option value="">Sin etiqueta</option>
-    <?php foreach ($etiquetas as $etiqueta): ?>
-      <option value="<?= $etiqueta['id'] ?>">
-        <?= htmlspecialchars($etiqueta['nombre']) ?>
-      </option>
-    <?php endforeach; ?>
-  </select> -->
 
     <!-- Formulario nueva subtarea -->
     <form class="task-form2" method="post">
@@ -224,11 +271,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       <button type="submit" name="nueva_subtarea">Añadir</button>
     </form>
 
-    <!-- Lista de tareas y subtareas -->
+    <!-- Lista de tareas -->
     <ul class="task-list">
       <?php foreach ($tareas as $tarea): ?>
         <li class="task<?= $tarea['estado'] === 'done' ? ' completed' : '' ?>">
           <?= htmlspecialchars($tarea['titulo']) ?>
+
+          <!-- Mostrar etiquetas (usar variable local para no pisar $etiquetas) -->
+          <div class="etiquetas">
+            <?php
+              $stmt_tags = $pdo->prepare("
+                SELECT e.* FROM etiquetas e
+                INNER JOIN tarea_etiqueta te ON e.id = te.etiqueta_id
+                WHERE te.tarea_id = ?
+              ");
+              $stmt_tags->execute([$tarea['id']]);
+              $etiquetas_asignadas = $stmt_tags->fetchAll();
+              foreach ($etiquetas_asignadas as $etq): ?>
+                <span style="background: <?= htmlspecialchars($etq['color']) ?>; padding:3px 6px; border-radius:6px; color:#fff; margin-right:4px;">
+                  <?= htmlspecialchars($etq['nombre']) ?>
+                </span>
+            <?php endforeach; ?>
+          </div>
+
           <a href="?editar=<?= $tarea['id'] ?>" class="btn-editar">Editar</a>
           <?php if ($tarea['estado'] !== 'done'): ?>
             <a href="?completar=<?= $tarea['id'] ?>" class="btn-completar">Completar</a>
@@ -266,7 +331,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
             <ul class="attachments">
               <?php foreach ($adjuntos as $adj): ?>
                 <li>
-                  <a href="uploads/<?= htmlspecialchars($adj['ruta']) ?>" target="_blank">
+                  <a href="<?= htmlspecialchars($adj['ruta']) ?>" target="_blank">
                     <?= htmlspecialchars($adj['nombre_archivo']) ?>
                   </a>
                 </li>
@@ -274,7 +339,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
             </ul>
           <?php endif; ?>
 
-          <!-- Formulario subida de archivos por tarea -->
+          <!-- Formulario subida de archivos -->
           <form method="post" enctype="multipart/form-data" class="upload-form">
             <input type="hidden" name="tarea_id" value="<?= $tarea['id'] ?>">
             <input type="file" name="archivo" required>

@@ -102,12 +102,16 @@ body {
 }
 
 .task-form input,
-.task-form2 input {
+.task-form select,
+.task-form2 input,
+.task-form2 select {
   flex: 1;
   padding: 3% 4%;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 100%;
+  background: #fff;   /* 👈 asegúrate que no quede transparente */
+  color: #333;
 }
 
 .task-form button,
