@@ -232,7 +232,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         <input type="text" name="titulo" required value="<?= htmlspecialchars($tarea_editar['titulo']) ?>" />
 
         <label for="etiquetas_editar">Etiquetas:</label>
-        <select name="etiquetas[]" id="etiquetas_editar" multiple>
+        <select name="etiquetas[]" id="etiquetas_editar">
           <?php foreach ($etiquetas as $etiqueta): ?>
             <option value="<?= $etiqueta['id'] ?>" <?= in_array($etiqueta['id'], $etiquetas_tarea) ? 'selected' : '' ?>>
               <?= htmlspecialchars($etiqueta['nombre']) ?>
@@ -249,7 +249,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         <input type="text" name="titulo" placeholder="Agregar Nueva Tarea..." />
 
         <label for="etiquetas_nueva">Etiquetas:</label>
-        <select name="etiquetas[]" id="etiquetas_nueva" multiple>
+        <select name="etiquetas[]" id="etiquetas_nueva">
           <?php foreach ($etiquetas as $etiqueta): ?>
             <option value="<?= $etiqueta['id'] ?>"><?= htmlspecialchars($etiqueta['nombre']) ?></option>
           <?php endforeach; ?>
