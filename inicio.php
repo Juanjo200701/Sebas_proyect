@@ -11,23 +11,42 @@ $usuario_id = $_SESSION['usuario_id'];
 $errores = [];
 $mensaje = "";
 
+// Obtener rol del usuario (para lógica admin)
+$stmtUser = $pdo->prepare("SELECT rol FROM usuarios WHERE id = ?");
+$stmtUser->execute([$usuario_id]);
+$userRow = $stmtUser->fetch(PDO::FETCH_ASSOC);
+$userRol = $userRow['rol'] ?? 'member';
+
 // --- Consultar todas las etiquetas (antes del HTML) ---
 $stmtEtiquetas = $pdo->query("SELECT id, nombre, color FROM etiquetas ORDER BY nombre ASC");
 $etiquetas = $stmtEtiquetas->fetchAll(PDO::FETCH_ASSOC);
 
+// --- Consultar proyectos dependiendo de rol (admin = todos, else solo creados por el usuario) ---
+if ($userRol === 'admin') {
+    $stmtProyectos = $pdo->query("SELECT id, nombre FROM proyectos ORDER BY nombre ASC");
+    $proyectos = $stmtProyectos->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    $stmtProyectos = $pdo->prepare("SELECT id, nombre FROM proyectos WHERE creado_por = ? ORDER BY nombre ASC");
+    $stmtProyectos->execute([$usuario_id]);
+    $proyectos = $stmtProyectos->fetchAll(PDO::FETCH_ASSOC);
+}
+
 // --- CRUD TAREAS ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_tarea'])) {
     $titulo = trim($_POST['titulo'] ?? '');
-    $etiquetas_sel = $_POST['etiquetas'] ?? [];
+    $proyecto_id = intval($_POST['proyecto_id'] ?? 0);
+    $etiquetas_sel = $_POST['etiquetas'] ?? []; // name="etiquetas[]" en el form (aunque sea single select)
 
     if (empty($titulo)) {
         $errores[] = "El título de la tarea no puede estar vacío.";
+    } elseif ($proyecto_id <= 0) {
+        $errores[] = "Debes seleccionar un proyecto.";
     } else {
-        $stmt = $pdo->prepare("INSERT INTO tareas (titulo, creador_id, asignado_id, estado) VALUES (?, ?, ?, 'todo')");
-        $stmt->execute([$titulo, $usuario_id, $usuario_id]);
+        $stmt = $pdo->prepare("INSERT INTO tareas (titulo, creador_id, asignado_id, estado, proyecto_id) VALUES (?, ?, ?, 'todo', ?)");
+        $stmt->execute([$titulo, $usuario_id, $usuario_id, $proyecto_id]);
         $tarea_id = $pdo->lastInsertId();
 
-        // vincular etiquetas si existen
+        // vincular etiquetas si existen (si el select es single, vendrá como array con un solo elemento)
         foreach ($etiquetas_sel as $etiqueta_id) {
             $stmtEtiquetasIns = $pdo->prepare("INSERT INTO tarea_etiqueta (tarea_id, etiqueta_id) VALUES (?, ?)");
             $stmtEtiquetasIns->execute([$tarea_id, intval($etiqueta_id)]);
@@ -38,15 +57,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_tarea'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_tarea'])) {
     $id = intval($_POST['tarea_id']);
     $titulo = trim($_POST['titulo'] ?? '');
+    $proyecto_id = intval($_POST['proyecto_id'] ?? 0);
     $etiquetas_sel = $_POST['etiquetas'] ?? [];
 
     if (empty($titulo)) {
         $errores[] = "El título de la tarea no puede estar vacío.";
+    } elseif ($proyecto_id <= 0) {
+        $errores[] = "Debes seleccionar un proyecto.";
     } else {
-        $stmt = $pdo->prepare("UPDATE tareas SET titulo=? WHERE id=? AND asignado_id=?");
-        $stmt->execute([$titulo, $id, $usuario_id]);
+        // Para seguridad: solo permitir editar si eres el asignado (o si quieres permitir admin: quítalo)
+        if ($userRol === 'admin') {
+            $stmt = $pdo->prepare("UPDATE tareas SET titulo=?, proyecto_id=? WHERE id=?");
+            $stmt->execute([$titulo, $proyecto_id, $id]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE tareas SET titulo=?, proyecto_id=? WHERE id=? AND asignado_id=?");
+            $stmt->execute([$titulo, $proyecto_id, $id, $usuario_id]);
+        }
 
-        // actualizar etiquetas: borrar las anteriores y volver a insertar
+        // actualizar etiquetas: borrar y reinsertar
         $pdo->prepare("DELETE FROM tarea_etiqueta WHERE tarea_id=?")->execute([$id]);
         foreach ($etiquetas_sel as $etiqueta_id) {
             $stmtEtiquetasIns = $pdo->prepare("INSERT INTO tarea_etiqueta (tarea_id, etiqueta_id) VALUES (?, ?)");
@@ -55,35 +83,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_tarea'])) {
     }
 }
 
-// Completar / Eliminar tarea
+// Completar / Eliminar tarea (solo si eres asignado; si quieres admin también, ajustar)
 if (isset($_GET['completar'])) {
     $id = intval($_GET['completar']);
-    $stmt = $pdo->prepare("UPDATE tareas SET estado = 'done' WHERE id = ? AND asignado_id = ?");
-    $stmt->execute([$id, $usuario_id]);
+    if ($userRol === 'admin') {
+        $stmt = $pdo->prepare("UPDATE tareas SET estado = 'done' WHERE id = ?");
+        $stmt->execute([$id]);
+    } else {
+        $stmt = $pdo->prepare("UPDATE tareas SET estado = 'done' WHERE id = ? AND asignado_id = ?");
+        $stmt->execute([$id, $usuario_id]);
+    }
 }
 if (isset($_GET['eliminar'])) {
     $id = intval($_GET['eliminar']);
-    $stmt = $pdo->prepare("DELETE FROM tareas WHERE id = ? AND asignado_id = ?");
-    $stmt->execute([$id, $usuario_id]);
+    if ($userRol === 'admin') {
+        $stmt = $pdo->prepare("DELETE FROM tareas WHERE id = ?");
+        $stmt->execute([$id]);
+    } else {
+        $stmt = $pdo->prepare("DELETE FROM tareas WHERE id = ? AND asignado_id = ?");
+        $stmt->execute([$id, $usuario_id]);
+    }
 }
 
-// Consultar tareas (solo top-level)
-$stmt = $pdo->prepare("SELECT * FROM tareas WHERE asignado_id = ? AND parent_task_id IS NULL ORDER BY creado_en DESC");
+// Consultar tareas (solo top-level) — añadimos el nombre del proyecto via JOIN
+$stmt = $pdo->prepare("SELECT t.*, p.nombre AS proyecto_nombre FROM tareas t LEFT JOIN proyectos p ON t.proyecto_id = p.id WHERE t.asignado_id = ? AND t.parent_task_id IS NULL ORDER BY t.creado_en DESC");
 $stmt->execute([$usuario_id]);
-$tareas = $stmt->fetchAll();
+$tareas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Datos para edición
 $tarea_editar = null;
 $etiquetas_tarea = [];
 if (isset($_GET['editar'])) {
     $id = intval($_GET['editar']);
-    $stmt = $pdo->prepare("SELECT * FROM tareas WHERE id = ? AND asignado_id = ?");
-    $stmt->execute([$id, $usuario_id]);
-    $tarea_editar = $stmt->fetch();
+    // Los permisos de edición se mantienen iguales que arriba
+    if ($userRol === 'admin') {
+        $stmt = $pdo->prepare("SELECT * FROM tareas WHERE id = ?");
+        $stmt->execute([$id]);
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM tareas WHERE id = ? AND asignado_id = ?");
+        $stmt->execute([$id, $usuario_id]);
+    }
+    $tarea_editar = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($tarea_editar) {
         $stmt = $pdo->prepare("SELECT etiqueta_id FROM tarea_etiqueta WHERE tarea_id=?");
         $stmt->execute([$tarea_editar['id']]);
-        $etiquetas_tarea = array_column($stmt->fetchAll(), 'etiqueta_id');
+        $etiquetas_tarea = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'etiqueta_id');
     }
 }
 
@@ -175,7 +220,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -183,7 +227,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestor de Tareas</title>
   <link rel="stylesheet" href="style/todo.css" />
-  <!-- FIX CSS rápido para que los <select> dentro de los formularios flex se vean correctamente -->
   <style>
     .task-form input, .task-form select,
     .task-form2 input, .task-form2 select {
@@ -195,10 +238,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       background: #fff;
       color: #333;
       min-width: 160px;
-    }
-    /* Si usas multiple, poner tamaño razonable */
-    .task-form select[multiple], .task-form2 select[multiple] {
-      min-height: 80px;
     }
   </style>
 </head>
@@ -231,8 +270,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         <input type="hidden" name="tarea_id" value="<?= $tarea_editar['id'] ?>">
         <input type="text" name="titulo" required value="<?= htmlspecialchars($tarea_editar['titulo']) ?>" />
 
-        <label for="etiquetas_editar">Etiquetas:</label>
+        <label for="proyecto_editar">Proyecto:</label>
+        <select name="proyecto_id" id="proyecto_editar" required>
+          <option value="">-- Selecciona un proyecto --</option>
+          <?php foreach ($proyectos as $p): ?>
+            <option value="<?= $p['id'] ?>" <?= (isset($tarea_editar['proyecto_id']) && $tarea_editar['proyecto_id'] == $p['id']) ? 'selected' : '' ?>>
+              <?= htmlspecialchars($p['nombre']) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+
+        <label for="etiquetas_editar">Etiqueta:</label>
         <select name="etiquetas[]" id="etiquetas_editar">
+          <option value="">-- Sin etiqueta --</option>
           <?php foreach ($etiquetas as $etiqueta): ?>
             <option value="<?= $etiqueta['id'] ?>" <?= in_array($etiqueta['id'], $etiquetas_tarea) ? 'selected' : '' ?>>
               <?= htmlspecialchars($etiqueta['nombre']) ?>
@@ -243,13 +293,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         <button type="submit" name="editar_tarea">Guardar cambios</button>
         <a href="inicio.php">Cancelar</a>
       </form>
+
     <?php else: ?>
       <!-- Formulario nueva tarea -->
       <form class="task-form" method="post">
         <input type="text" name="titulo" placeholder="Agregar Nueva Tarea..." />
 
-        <label for="etiquetas_nueva">Etiquetas:</label>
+        <label for="proyecto_nueva">Proyecto:</label>
+        <select name="proyecto_id" id="proyecto_nueva" required>
+          <option value="">-- Selecciona un proyecto --</option>
+          <?php foreach ($proyectos as $p): ?>
+            <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['nombre']) ?></option>
+          <?php endforeach; ?>
+        </select>
+
+        <label for="etiquetas_nueva">Etiqueta:</label>
         <select name="etiquetas[]" id="etiquetas_nueva">
+          <option value="">-- Sin etiqueta --</option>
           <?php foreach ($etiquetas as $etiqueta): ?>
             <option value="<?= $etiqueta['id'] ?>"><?= htmlspecialchars($etiqueta['nombre']) ?></option>
           <?php endforeach; ?>
@@ -275,10 +335,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
     <ul class="task-list">
       <?php foreach ($tareas as $tarea): ?>
         <li class="task<?= $tarea['estado'] === 'done' ? ' completed' : '' ?>">
-          <?= htmlspecialchars($tarea['titulo']) ?>
+          <div class="task-text">
+            <?= htmlspecialchars($tarea['titulo']) ?>
+            <div style="font-size:0.9rem;color:#666;margin-top:6px;">
+              Proyecto: <?= htmlspecialchars($tarea['proyecto_nombre'] ?? 'Sin proyecto') ?>
+            </div>
+          </div>
 
           <!-- Mostrar etiquetas (usar variable local para no pisar $etiquetas) -->
-          <div class="etiquetas">
+          <div class="etiquetas" style="margin-left:12px;">
             <?php
               $stmt_tags = $pdo->prepare("
                 SELECT e.* FROM etiquetas e
@@ -286,7 +351,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
                 WHERE te.tarea_id = ?
               ");
               $stmt_tags->execute([$tarea['id']]);
-              $etiquetas_asignadas = $stmt_tags->fetchAll();
+              $etiquetas_asignadas = $stmt_tags->fetchAll(PDO::FETCH_ASSOC);
               foreach ($etiquetas_asignadas as $etq): ?>
                 <span style="background: <?= htmlspecialchars($etq['color']) ?>; padding:3px 6px; border-radius:6px; color:#fff; margin-right:4px;">
                   <?= htmlspecialchars($etq['nombre']) ?>
@@ -294,17 +359,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
             <?php endforeach; ?>
           </div>
 
-          <a href="?editar=<?= $tarea['id'] ?>" class="btn-editar">Editar</a>
-          <?php if ($tarea['estado'] !== 'done'): ?>
-            <a href="?completar=<?= $tarea['id'] ?>" class="btn-completar">Completar</a>
-          <?php endif; ?>
-          <a href="?eliminar=<?= $tarea['id'] ?>" class="btn-eliminar">Eliminar</a>
+          <div class="task-actions" style="margin-left:auto;">
+            <a href="?editar=<?= $tarea['id'] ?>" class="btn-editar">Editar</a>
+            <?php if ($tarea['estado'] !== 'done'): ?>
+              <a href="?completar=<?= $tarea['id'] ?>" class="btn-completar">Completar</a>
+            <?php endif; ?>
+            <a href="?eliminar=<?= $tarea['id'] ?>" class="btn-eliminar">Eliminar</a>
+          </div>
 
           <!-- Subtareas -->
           <?php
             $stmt_sub = $pdo->prepare("SELECT * FROM tareas WHERE parent_task_id = ?");
             $stmt_sub->execute([$tarea['id']]);
-            $subtareas = $stmt_sub->fetchAll();
+            $subtareas = $stmt_sub->fetchAll(PDO::FETCH_ASSOC);
             if ($subtareas):
           ?>
             <ul class="subtask-list">
@@ -325,7 +392,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
           <?php
             $stmt_adj = $pdo->prepare("SELECT * FROM adjuntos WHERE tarea_id = ?");
             $stmt_adj->execute([$tarea['id']]);
-            $adjuntos = $stmt_adj->fetchAll();
+            $adjuntos = $stmt_adj->fetchAll(PDO::FETCH_ASSOC);
             if ($adjuntos):
           ?>
             <ul class="attachments">
@@ -340,7 +407,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
           <?php endif; ?>
 
           <!-- Formulario subida de archivos -->
-          <form method="post" enctype="multipart/form-data" class="upload-form">
+          <form method="post" enctype="multipart/form-data" class="upload-form" style="margin-top:8px;">
             <input type="hidden" name="tarea_id" value="<?= $tarea['id'] ?>">
             <input type="file" name="archivo" required>
             <button type="submit" name="subir_archivo">Subir archivo</button>
