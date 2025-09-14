@@ -357,7 +357,7 @@ body {
 /* LOGIN */
 
 .login-container {
-  background-color: rgb(235, 10, 10);
+  background-color: white;
   padding: 6%;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
