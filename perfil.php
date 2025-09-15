@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>perfil</title>
     <link rel="stylesheet" href="style/todo.css">
 </head>
 <body>
@@ -19,6 +19,8 @@
     <button onclick="editarPerfil()">Editar perfil</button>
   </div>
 </div>
+
+
 
 </body>
 </html>

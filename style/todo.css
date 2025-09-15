@@ -718,3 +718,62 @@ body {
   background-color: #4fd1c5;
 }
 
+
+/*EDIT-PERFIL*/
+.edit-profile-container {
+  background-color: white;
+  padding: 6%;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 60%;
+  max-width: 90%;
+  margin: auto;
+}
+
+.edit-profile-form h2 {
+  text-align: center;
+  margin-bottom: 4%;
+  color: #333;
+}
+
+.edit-profile-form label {
+  display: block;
+  margin-bottom: 1%;
+  color: #555;
+  font-weight: bold;
+}
+
+.edit-profile-form input[type="password"],
+.edit-profile-form input[type="file"] {
+  width: 100%;
+  padding: 3% 4%;
+  margin-bottom: 3%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 100%;
+  transition: 0.3s;
+}
+
+.edit-profile-form input:focus {
+  border-color: #74ebd5;
+  outline: none;
+  box-shadow: 0 0 5px rgba(116, 235, 213, 0.5);
+}
+
+.edit-profile-form button {
+  width: 100%;
+  padding: 3%;
+  background-color: #74ebd5;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  font-size: 100%;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.edit-profile-form button:hover {
+  background-color: #4fd1c5;
+}
+
