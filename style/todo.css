@@ -16,48 +16,79 @@ body {
   padding: 5% 3%;
 }
 
-/*  HEADER */
+/* HEADER */
 .header {
-  background-color:#ffffff;
-  color: white;
-  padding: 2% 3%;
+  background-color: #ffffff;
+  padding: 1rem 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: fixed;
   top: 0;
   width: 100%;
-  height: 10%;
+  height: 60px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
+/* NAV */
+.header nav {
+  display: flex;
+  gap: 2rem; /* Espaciado entre los enlaces */
+  align-items: center;
+}
+
+/* LINKS DEL NAV */
 .nav a,
-.cerrar-sesion {
-  color: rgb(9, 9, 9);
-  margin-left: 3%;
+.header nav a {
+  color: #333;
   text-decoration: none;
-  background: none;
+  font-size: 1rem;
+  font-weight: 600;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+/* Efecto subrayado animado */
+.header nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 2px;
+  background-color: #74ebd5;
+  transition: width 0.3s ease;
+}
+
+.header nav a:hover::after {
+  width: 100%;
+}
+
+.header nav a:hover {
+  color: #4fd1c5;
+}
+
+/* BOTÓN CERRAR SESIÓN */
+#cerrarSesionBtn {
+  background-color: #ff4d4d;
   border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 100%;
+  transition: background 0.3s ease;
 }
 
 #cerrarSesionBtn a {
-  position: relative;
-  left: 1000%;
-  color: red;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
 }
 
-.nav a {
-  position: relative;
-  left: 400%;
-  color: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+#cerrarSesionBtn:hover {
+  background-color: #e63939;
 }
+
 
 /*  INICIO */
 
@@ -795,3 +826,43 @@ body {
 
 /*EDITAR TAREAS*/
 
+.btn-cancelas {
+  display: inline-block;
+  width: 48%; /* mismo ancho que el botón de guardar */
+  padding: 0.8rem;
+  margin-top: 1.5rem;
+  background-color: #e5e5e5;
+  color: #333;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.btn-cancelas:hover {
+  background-color: #d1d1d1;
+  color: #000;
+}
+.btn-guardar-cambios {
+  display: inline-block;
+  width: 48%; /* Ocupa el mismo ancho que el botón cancelar */
+  padding: 0.8rem;
+  margin-top: 1.5rem;
+  background: linear-gradient(to right, #74ebd5, #ACB6E5); /* Degradado bonito */
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-guardar-cambios:hover {
+  background: linear-gradient(to right, #4fd1c5, #8da6d8); /* Degradado más oscuro en hover */
+  /* transform: scale(1.03); Ligeramente más grande al pasar el mouse */
+}
