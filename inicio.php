@@ -300,8 +300,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         <input type="text" name="titulo" placeholder="Agregar Nueva Tarea..." />
 
         <label for="proyecto_nueva">Proyecto:</label>
-        <select name="proyecto_id" id="proyecto_nueva" required>
-          <option value="">-- Selecciona un proyecto --</option>
+        <select name="proyecto_id" id="proyecto_nueva">
+          <option value="">-- Sin Proyecto --</option>
           <?php foreach ($proyectos as $p): ?>
             <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['nombre']) ?></option>
           <?php endforeach; ?>
