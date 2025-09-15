@@ -297,7 +297,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
     <?php else: ?>
       <!-- Formulario nueva tarea -->
       <form class="task-form" method="post">
-        <input type="text" name="titulo" placeholder="Agregar Nueva Tarea..." />
+        <input type="text" name="titulo" placeholder=" Nueva Tarea " />
 
         <label for="proyecto_nueva">Proyecto:</label>
         <select name="proyecto_id" id="proyecto_nueva">
@@ -322,12 +322,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
     <!-- Formulario nueva subtarea -->
     <form class="task-form2" method="post">
       <select name="parent_task_id" required>
-        <option value="">Selecciona tarea principal</option>
+        <option value="">Selecciona Tarea</option>
         <?php foreach ($tareas as $tarea): ?>
           <option value="<?= $tarea['id'] ?>"><?= htmlspecialchars($tarea['titulo']) ?></option>
         <?php endforeach; ?>
       </select>
-      <input type="text" name="titulo" placeholder="Agregar una Subtarea..." required />
+      <input type="text" name="titulo" placeholder=" Nueva Subtarea" required />
       <button type="submit" name="nueva_subtarea">Añadir</button>
     </form>
 
