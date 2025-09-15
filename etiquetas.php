@@ -61,7 +61,7 @@ if (isset($_GET['editar'])){
     <link rel="stylesheet" href="style/todo.css">
 </head>
 <body>
-    <!-- <?php include('header.php'); ?> -->
+    <?php include('header.php'); ?>
     <main class="etiquetas-container">
         <h1>Etiquetas</h1>
         <?php foreach ($errores as $error): ?>
