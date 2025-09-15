@@ -79,8 +79,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <input type="date" name="fecha_vencimiento" value="<?= htmlspecialchars($tarea['fecha_vencimiento'] ?? '') ?>">
 
       <button type="submit">Guardar cambios</button>
-      <a href="inicio.php">Cancelar</a>
+      <a href="inicio.php" class="btn-cancelas">Cancelar</a>
     </form>
   </main>
 </body>
 </html>
+
+

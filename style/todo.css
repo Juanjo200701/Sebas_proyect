@@ -776,4 +776,22 @@ body {
 .edit-profile-form button:hover {
   background-color: #4fd1c5;
 }
+.edit-profile-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 4%;
+  margin-top: 4%;
+}
+
+.edit-profile-buttons button {
+  width: 48%; /* Ajusta según el espacio que quieras darles */
+}
+
+.edit-profile-buttons {
+  display: block;
+  margin-top: 4%;
+}
+
+
+/*EDITAR TAREAS*/
 
