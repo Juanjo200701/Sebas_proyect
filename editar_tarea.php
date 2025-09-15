@@ -24,15 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $titulo = trim($_POST['titulo']);
     $estado = $_POST['estado'] ?? 'todo';
     $prioridad = $_POST['prioridad'] ?? 'medium';
-    $start_date = $_POST['start_date'] ?? null;
-    $due_date = $_POST['due_date'] ?? null;
+    $fecha_inicio = $_POST['fecha_inicio'] ?? null;
+    $fecha_vencimiento = $_POST['fecha_vencimiento'] ?? null;
 
     $stmt = $pdo->prepare("
         UPDATE tareas 
-        SET titulo=?, estado=?, prioridad=?, start_date=?, due_date=? 
+        SET titulo=?, estado=?, prioridad=?, fecha_inicio=?, fecha_vencimiento=? 
         WHERE id=?
     ");
-    $stmt->execute([$titulo, $estado, $prioridad, $start_date, $due_date, $id]);
+    $stmt->execute([$titulo, $estado, $prioridad, $fecha_inicio, $fecha_vencimiento, $id]);
 
     header("Location: inicio.php");
     exit();
@@ -73,10 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </select>
 
       <label>Fecha inicio:</label>
-      <input type="date" name="start_date" value="<?= htmlspecialchars($tarea['start_date'] ?? '') ?>">
+      <input type="date" name="fecha_inicio" value="<?= htmlspecialchars($tarea['fecha_inicio'] ?? '') ?>">
 
       <label>Fecha vencimiento:</label>
-      <input type="date" name="due_date" value="<?= htmlspecialchars($tarea['due_date'] ?? '') ?>">
+      <input type="date" name="fecha_vencimiento" value="<?= htmlspecialchars($tarea['fecha_vencimiento'] ?? '') ?>">
 
       <button type="submit">Guardar cambios</button>
       <a href="inicio.php">Cancelar</a>
