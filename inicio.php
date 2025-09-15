@@ -360,7 +360,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
           </div>
 
           <div class="task-actions" style="margin-left:auto;">
-            <a href="?editar=<?= $tarea['id'] ?>" class="btn-editar">Editar</a>
+            <a href="editar_tarea.php?id=<?= $tarea['id'] ?>" class="btn-editar">Editar</a>
             <?php if ($tarea['estado'] !== 'done'): ?>
               <a href="?completar=<?= $tarea['id'] ?>" class="btn-completar">Completar</a>
             <?php endif; ?>

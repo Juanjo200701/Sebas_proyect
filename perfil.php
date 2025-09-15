@@ -18,7 +18,7 @@
     <button onclick="cerrarSesion()">Cerrar sesión</button>
     <!-- <button onclick="editarPerfil()">Editar perfil</button> -->
     <button onclick="window.location.href='edit.perfil.php'">Editar perfil</button>
-    <button onclick="window.location.href='inicio.php'">inicio</button>
+    <button onclick="window.location.href='inicio.php'">Volver</button>
   </div>
 </div>
 
