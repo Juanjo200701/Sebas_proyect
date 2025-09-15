@@ -28,6 +28,8 @@
     <input type="password" id="confirm-password" name="confirm-password" required>
 
     <button type="submit">Guardar cambios</button>
+        <button onclick="window.location.href='perfil.php'">perfil</button>
+
   </form>
 </div>
 </body>
