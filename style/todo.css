@@ -179,6 +179,113 @@ body {
   transition: background-color 0.3s ease;
   width: 100%; /* Hace que todos los botones tengan mismo ancho */
 }
+/*boton de comentar para las tareas*/
+.btn-comentar {
+    display: inline-block;
+    background-color: #007BFF; /* azul vibrante */
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: sans-serif;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-comentar:hover {
+    background-color: #0056b3; /* azul más oscuro al pasar el mouse */
+    transform: translateY(-2px); /* pequeño efecto "levantado" */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-comentar:active {
+    transform: scale(0.98); /* pequeña contracción al hacer clic */
+}
+ /*botones para las subtareas*/
+.btn-sub-completar {
+    display: inline-block;
+    padding: 10px 22px;
+    background-color: #28a745;           /* Verde de acción */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Segoe UI', sans-serif;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-sub-completar:hover {
+    background-color: #218838;           /* Verde más oscuro */
+    box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-sub-completar:active {
+    background-color: #1e7e34;           /* Verde aún más oscuro al hacer clic */
+    transform: scale(0.97);
+}
+/*boton editar subtareas*/
+.btn-sub-editar {
+    display: inline-block;
+    padding: 10px 22px;
+    background-color: #17a2b8;           /* Azul cyan (Bootstrap info) */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Segoe UI', sans-serif;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 8px rgba(23, 162, 184, 0.2);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-sub-editar:hover {
+    background-color: #138496;           /* Azul más oscuro */
+    box-shadow: 0 6px 12px rgba(23, 162, 184, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-sub-editar:active {
+    background-color: #117a8b;           /* Azul aún más oscuro al hacer clic */
+    transform: scale(0.97);
+}
+/*boton eliminar subtarea*/
+
+.btn-sub-eliminar {
+    display: inline-block;
+    padding: 10px 22px;
+    background-color: #dc3545;            /* Rojo Bootstrap (danger) */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Segoe UI', sans-serif;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-sub-eliminar:hover {
+    background-color: #c82333;            /* Rojo más oscuro */
+    box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-sub-eliminar:active {
+    background-color: #bd2130;            /* Rojo aún más oscuro al hacer clic */
+    transform: scale(0.97);
+}
+
+
 
 .task-form button:hover,
 .task-form2 button:hover {
