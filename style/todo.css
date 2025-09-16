@@ -544,10 +544,8 @@ body {
 
 /*ETIQUETAS*/
 
-
 /*ESTILOS SOLO PARA LA PÁGINA DE ETIQUETAS */
-
-/* Contenedor principal de etiquetas */
+/* CONTENEDOR PRINCIPAL DE ETIQUETAS */
 .etiquetas-container {
   background-color: #fff;
   padding: 5%;
@@ -556,7 +554,7 @@ body {
   width: 80%;
   max-width: 600px;
   position: relative;
-  top: 15%;
+  top: 100px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -564,10 +562,9 @@ body {
   max-height: 80vh;
   overflow-y: auto;
   margin: 0 auto;
-  right: 100px;
 }
 
-/* Título */
+/* TÍTULO */
 .etiquetas-container h1 {
   font-size: 1.8rem;
   color: #333;
@@ -575,22 +572,32 @@ body {
   text-align: center;
 }
 
-/* Formulario de etiquetas */
+/* FORMULARIO DE ETIQUETAS */
 .etiqueta-form {
   display: flex;
   gap: 8px;
   margin-bottom: 20px;
   width: 100%;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
-.etiqueta-form input[type="text"],
-.etiqueta-form input[type="color"] {
+.etiqueta-form input[type="text"] {
   padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
   outline: none;
+  flex: 1;
+  min-width: 45%;
+}
+
+.etiqueta-form input[type="color"] {
+  width: 50px;
+  height: 38px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .etiqueta-form button {
@@ -608,14 +615,28 @@ body {
   background-color: #4fd1c5;
 }
 
-/* Lista de etiquetas */
-.etiquetas-list {
+.etiqueta-form a {
+  text-decoration: none;
+  background-color: #ff6b6b;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.etiqueta-form a:hover {
+  background-color: #ff2e2e;
+}
+
+/* LISTA DE ETIQUETAS */
+.etiquetas-lista {
   list-style: none;
   width: 100%;
   padding: 0;
 }
 
-.etiquetas-list li {
+.etiquetas-lista li {
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
@@ -625,26 +646,19 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
-/* Color de la etiqueta */
-.color-box {
-  width: 15px;
-  height: 15px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-/* Texto de la etiqueta */
-.etiqueta-nombre {
+/* NOMBRE DE LA ETIQUETA */
+.etiquetas-lista strong {
   font-weight: bold;
   color: #333;
   flex: 1;
-  margin-left: 5px;
 }
 
-/* Acciones */
-.etiqueta-actions a {
+/* ACCIONES (EDITAR Y ELIMINAR) */
+.btn-etiqueta-editar,
+.btn-etiqueta-eliminar {
   text-decoration: none;
   font-weight: bold;
   font-size: 0.9rem;
@@ -652,56 +666,22 @@ body {
   transition: color 0.2s ease;
 }
 
-.etiqueta-actions .editar {
+.btn-etiqueta-editar {
   color: #4fd1c5;
 }
 
-.etiqueta-actions .editar:hover {
+.btn-etiqueta-editar:hover {
   color: #38b2ac;
 }
 
-.etiqueta-actions .eliminar {
+.btn-etiqueta-eliminar {
   color: #ff6b6b;
 }
 
-.etiqueta-actions .eliminar:hover {
+.btn-etiqueta-eliminar:hover {
   color: #ff2e2e;
 }
-/* BOTONES DE EDITAR Y ELIMINAR PARA ETIQUETAS */
 
-/* Estilo general para ambos botones */
-.btn-etiqueta-editar,
-.btn-etiqueta-eliminar {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  text-decoration: none;
-  transition: background 0.3s ease, transform 0.2s ease;
-  cursor: pointer;
-  color: white;
-}
-
-/* Botón Editar */
-.btn-etiqueta-editar {
-  background-color: #4fd1c5;
-}
-
-.btn-etiqueta-editar:hover {
-  background-color: #38b2ac;
-  transform: scale(1.05);
-}
-
-/* Botón Eliminar */
-.btn-etiqueta-eliminar {
-  background-color: #ff6b6b;
-}
-
-.btn-etiqueta-eliminar:hover {
-  background-color: #ff2e2e;
-  transform: scale(1.05);
-}
 
 /*PERFIL*/
 .profile-container {
@@ -873,3 +853,135 @@ body {
   background: linear-gradient(to right, #4fd1c5, #8da6d8); /* Degradado más oscuro en hover */
   /* transform: scale(1.03); Ligeramente más grande al pasar el mouse */
 }
+
+/*PROYECTOS*/
+
+/* CONTENEDOR PRINCIPAL */
+.proyectos-container {
+  background-color: #fff;
+  padding: 5%;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 600px;
+  position: relative;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  max-height: 80vh;
+  overflow-y: auto;
+  margin: 0 auto;
+}
+
+/* TÍTULO */
+.proyectos-container h1 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* FORMULARIO DE PROYECTOS */
+.proyecto-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.proyecto-form input[type="text"] {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  flex: 1;
+  min-width: 45%;
+}
+
+.proyecto-form button {
+  background-color: #74ebd5;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.proyecto-form button:hover {
+  background-color: #4fd1c5;
+}
+
+.proyecto-form a {
+  text-decoration: none;
+  background-color: #ff6b6b;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.proyecto-form a:hover {
+  background-color: #ff2e2e;
+}
+
+/* LISTA DE PROYECTOS */
+.proyectos-lista {
+  list-style: none;
+  width: 100%;
+  padding: 0;
+}
+
+.proyectos-lista li {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* TEXTO DEL PROYECTO */
+.proyectos-lista strong {
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+}
+
+/* ACCIONES */
+.proyectos-lista a {
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-left: 10px;
+  transition: color 0.2s ease;
+}
+
+/* BOTONES EDITAR Y ELIMINAR */
+.proyectos-lista a[href*="editar"] {
+  color: #4fd1c5;
+}
+
+.proyectos-lista a[href*="editar"]:hover {
+  color: #38b2ac;
+}
+
+.proyectos-lista a[href*="eliminar"] {
+  color: #ff6b6b;
+}
+
+.proyectos-lista a[href*="eliminar"]:hover {
+  color: #ff2e2e;
+}
+
