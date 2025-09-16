@@ -359,12 +359,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
             <?php endforeach; ?>
           </div>
 
-          <div class="task-actions" style="margin-left:auto;">
-            <a href="editar_tarea.php?id=<?= $tarea['id'] ?>" class="btn-editar">Editar</a>
+          <div class="task-actions">
+            <a href="editar_tarea.php?id=<?= $tarea['id'] ?>" class='btn-editar'>Editar</a>
             <?php if ($tarea['estado'] !== 'done'): ?>
               <a href="?completar=<?= $tarea['id'] ?>" class="btn-completar">Completar</a>
             <?php endif; ?>
-            <a href="?eliminar=<?= $tarea['id'] ?>" class="btn-eliminar">Eliminar</a>
+            
+            <?php if (empty($tarea['comentario'])): ?>
+              <a href="comentarios.php?id=<?= $tarea['id'] ?>" class="btn-comentar">Comentar</a>
+            <?php else: ?>
+              <a href="comentarios.php?id=<?= $tarea['id'] ?>" class="btn-ver-comentario">Ver comentario</a>
+            <?php endif; ?>
+              <a href="eliminar_tarea.php?id=<?= $tarea['id'] ?>" onclick="return confirm('¿Seguro que deseas eliminar esta tarea?')" class='btn-eliminar'>Eliminar</a>
           </div>
 
           <!-- Subtareas -->
