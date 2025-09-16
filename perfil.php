@@ -38,7 +38,7 @@ $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
     <button onclick="window.location.href='inicio.php'">Volver</button>
     <!-- <button onclick="editarPerfil()">Editar perfil</button> -->
     <button onclick="window.location.href='edit.perfil.php'">Editar perfil</button>
-    <button onclick="cerrarSesion()">Cerrar sesión</button>
+    <a href="logout.php"><button>Cerrar Sesión</button></a>
   </div>
 </div>
 

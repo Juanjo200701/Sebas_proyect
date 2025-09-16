@@ -21,7 +21,7 @@ body {
   background-color: #ffffff;
   padding: 1rem 3rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   position: fixed;
   top: 0;
@@ -29,6 +29,7 @@ body {
   height: 80px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  text-align: center;
 }
 
 /* NAV */
@@ -38,7 +39,7 @@ body {
   align-items: center;
   position: relative;
   justify-content: center;
-  left: 24%;
+  /* left: 24%; */
 }
 
 /* LINKS DEL NAV */
@@ -138,41 +139,56 @@ body {
 }
 
 /* --- Formularios --- */
+/* Contenedor general de formularios */
 .task-form,
 .task-form2 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1rem;
-  align-items: center;
-  margin-bottom: 1rem;
+  align-items: end;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
 }
 
+/* Inputs y selects uniformes */
 .task-form input,
-.task-form2 input,
 .task-form select,
+.task-form2 input,
 .task-form2 select {
-  padding: 10px;
+  padding: 8px 10px;
+  font-size: 14px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  width: 90%;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
+/* Estilo uniforme para los botones */
 .task-form button,
 .task-form2 button {
   background-color: #6ef0e5;
   color: #000;
   border: none;
-  padding: 10px 18px;
+  padding: 12px 20px;
   border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 100%; /* Hace que todos los botones tengan mismo ancho */
 }
 
 .task-form button:hover,
 .task-form2 button:hover {
   background-color: #4dd2c8;
+}
+
+/* Títulos centrados */
+h2, h3 {
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 /* Botón cancelar */
