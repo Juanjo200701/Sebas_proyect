@@ -1,36 +1,27 @@
 <?php
-require "database.php";
+require "database.php"; // Aquí debe estar $pdo
 
 $mensaje = "";
 
 if (isset($_GET["token"])) {
     $token = trim($_GET["token"]);
 
-    // // DEBUG temporal
-    // echo "<p>DEBUG: Token recibido = $token</p>";
-
     // buscar usuario con ese token válido
-    $stmt = $conn->prepare("SELECT id, reset_expiration, reset_token FROM usuarios WHERE reset_token=?");
-    $stmt->bind_param("s", $token);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $stmt = $pdo->prepare("SELECT id, reset_expiration, reset_token FROM usuarios WHERE reset_token = ?");
+    $stmt->execute([$token]);
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($user = $result->fetch_assoc()) {
+    if ($usuario) {
+        if (!empty($usuario["reset_expiration"]) && strtotime($usuario["reset_expiration"]) > time()) {
 
-        // // DEBUG temporal
-        // echo "<p>DEBUG: Token en DB = " . $user['reset_token'] . "</p>";
-
-        if (!empty($user["reset_expiration"]) && strtotime($user["reset_expiration"]) > time()) {
-            
             // si el usuario envió nueva contraseña
             if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $newpass = password_hash($_POST["password"], PASSWORD_DEFAULT);
 
-                $stmt = $conn->prepare("UPDATE usuarios 
-                                        SET password=?, reset_token=NULL, reset_expiration=NULL 
-                                        WHERE id=?");
-                $stmt->bind_param("si", $newpass, $user["id"]);
-                $stmt->execute();
+                $stmt = $pdo->prepare("UPDATE usuarios 
+                                        SET password = ?, reset_token = NULL, reset_expiration = NULL 
+                                        WHERE id = ?");
+                $stmt->execute([$newpass, $usuario["id"]]);
 
                 $mensaje = "✅ Contraseña actualizada correctamente. <a href='login.php'>Inicia sesión</a>";
             }

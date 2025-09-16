@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmt->execute([$token, $expira, $usuario["id"]]);
 
             // Enlace de recuperación
-            $link = "http://localhost/Proyecto_Sebas/Sebas_proyect/reset_password.php?token=$token";
+            $link = "http://localhost/Proyecto_Sebas/Sebas_proyect/resetear_contraseña.php?token=$token";
 
             // ===== CONFIGURACIÓN DE PHPMailer =====
             $mail = new PHPMailer(true);
