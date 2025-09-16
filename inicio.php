@@ -319,7 +319,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         </select>
 
         <button type="submit" name="editar_tarea">Guardar cambios</button>
-        <a href="inicio.php">Cancelar</a>
+        <a href="inicio.php"class="btn-cancelar-editar-admin">Cancelar</a>
       </form>
 
     <?php else: ?>

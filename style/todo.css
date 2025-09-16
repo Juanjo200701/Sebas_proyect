@@ -38,8 +38,7 @@ body {
   align-items: center;
   position: relative;
   justify-content: center;
-  left: 28%;
-  
+  left: 24%;
 }
 
 /* LINKS DEL NAV */
@@ -96,304 +95,219 @@ body {
 
 
 /*  INICIO */
-
+/* --- Contenedor principal --- */
 .todo-container {
   background-color: #fff;
-  padding: 6%;
+  padding: 2rem;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  max-width: 90%;
-  position: fixed;
-  top: 15%;
+  width: 85%;
+  max-width: 3000px;
+  margin: 5% auto;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  max-height: 80vh;       /* asegura que nunca pase de la pantalla */
-  overflow-y: auto;       /* permite hacer scroll si hay muchas tareas */
+  gap: 1.5rem;
+  max-height: 80vh;
+  overflow-y: auto;
 }
-
-/* lista de tareas */
-.task-list {
-  list-style: none;
-  width: 80%;
-  max-height: 60vh;       /* altura máxima solo para la lista */
-  overflow-y: auto;       /* scroll independiente */
-  padding-right: 0.5rem;  /* deja espacio para el scrollbar */
-}
-
 
 .todo-container h1 {
   text-align: center;
+  font-size: 2rem;
+  margin: 0;
   color: #333;
-  margin-bottom: 5%;
 }
 
+/* --- Mensajes --- */
+.error {
+  background-color: #fdecea;
+  color: #b71c1c;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #f5c2c0;
+  margin-bottom: 10px;
+}
+
+.success {
+  background-color: #e6f7e6;
+  color: #2e7d32;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #b2dfdb;
+  margin-bottom: 10px;
+}
+
+/* --- Formularios --- */
 .task-form,
 .task-form2 {
-  display: flex;
-  gap: 2%;
-  margin-bottom: 4%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .task-form input,
-.task-form select,
 .task-form2 input,
+.task-form select,
 .task-form2 select {
-  flex: 1;
-  padding: 3% 4%;
-  border: 1px solid #ddd;
+  padding: 10px;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  font-size: 100%;
-  background: #fff;   /* asegúrate que no quede transparente */
-  color: #333;
-  position: relative;
-  width: 50px;
+  font-size: 1rem;
+  width: 90%;
 }
 
 .task-form button,
 .task-form2 button {
-  background-color: #74ebd5;
+  background-color: #6ef0e5;
+  color: #000;
   border: none;
-  color: white;
-  padding: 3%;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s;
+  padding: 10px 18px;
+  border-radius: 10px;
   font-weight: bold;
-  font-size: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .task-form button:hover,
 .task-form2 button:hover {
-  background-color: #4fd1c5;
+  background-color: #4dd2c8;
 }
 
-/*boton de editar*/
-.btn-editar {
+/* Botón cancelar */
+.btn-cancelar-editar-admin {
   display: inline-block;
-  padding: 2% 4%;
-  background-color: #74ebd5;
+  background-color: #dc3545;
   color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
   text-decoration: none;
-  border-radius: 8px;
   font-weight: bold;
-  font-size: 100%;
-  transition: background 0.3s;
-  border: none;
-  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
-.btn-editar:hover {
-  background-color: #4fd1c5;
-}
-/*boton de completar*/
-.btn-completar {
-  display: inline-block;
-  padding: 2% 4%;
-  background-color: #74ebd5;
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 100%;
-  transition: background 0.3s;
-  border: none;
-  cursor: pointer;
+.btn-cancelar-editar-admin:hover {
+  background-color: #b02a37;
+  transform: scale(1.03);
 }
 
-.btn-completar:hover {
-  background-color: #4fd1c5;
-}
-/*boton de eliminar*/
-.btn-eliminar {
-  display: inline-block;
-  padding: 2% 4%;
-  background-color: #ff6b6b;
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 100%;
-  transition: background 0.3s;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-eliminar:hover {
-  background-color: #ff2e2e;
-}
-
-/*sub tareas botones*/
-.btn-sub-completar {
-  display: inline-block;
-  width: 25%;                /* ancho relativo al contenedor */
-  padding: 1% 3%;            /* alto y ancho del relleno en % */
-  background-color: #4fd1c5;
-  color: #fff;
-  font-weight: bold;
-  font-size: 100%;           /* tamaño de letra relativo */
-  text-align: center;        /* centra el texto */
-  text-decoration: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.btn-sub-completar:hover {
-  background-color: #38b2ac;
-  transform: scale(1.05);
-}
-
-.btn-sub-completar:active {
-  transform: scale(0.95);
-}
- /*editar*/
- .btn-sub-editar {
-  display: inline-block;
-  width: 25%;                /* ancho relativo al contenedor */
-  padding: 1% 3%;            /* alto y ancho del relleno en % */
-  background-color: #4fd1c5;
-  color: #fff;
-  font-weight: bold;
-  font-size: 100%;           /* tamaño de letra relativo */
-  text-align: center;        /* centra el texto */
-  text-decoration: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.btn-sub-editar:hover {
-  background-color: #38b2ac;
-  transform: scale(1.05);
-}
-
-.btn-sub-editar:active {
-  transform: scale(0.95);
-} 
-/*eliminar*/
-.btn-sub-eliminar {
-  display: inline-block;
-  width: 25%;                /* ancho relativo al contenedor */
-  padding: 1% 3%;            /* alto y ancho del relleno en % */
-  background-color: #ff6b6b;
-  color: #fff;
-  font-weight: bold;
-  font-size: 100%;           /* tamaño de letra relativo */
-  text-align: center;        /* centra el texto */
-  text-decoration: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-  
-}
-
-.btn-sub-eliminar:hover {
-  background-color: #ff2e2e;
-  transform: scale(1.05);
-}
-
-.btn-sub-eliminar:active {
-  transform: scale(0.95);
+/* --- Lista de tareas --- */
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .task {
-  background-color: #ffffff;
-  width: 100%;
-  padding: 0.6rem 1rem;     /* menos padding */
+  background: #f9f9f9;
   border-radius: 10px;
-  margin-bottom: 0.6rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-
+  padding: 1rem;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.task-text {
-  flex: 1;
-  color: #333;
-  font-size: 0.9rem;        /* texto más pequeño */
-}
-
-/* Botones */
-.task button,
-.task a {
-  border: none;
-  padding: 0.3rem 0.6rem;   /* botones más compactos */
-  border-radius: 6px;
-  font-size: 0.8rem;        /* texto de botones más pequeño */
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-/* Colores */
-.btn-editar,
-.btn-completar {
-  background-color: #4fd1c5;
-  color: white;
-}
-.btn-editar:hover,
-.btn-completar:hover {
-  background-color: #38b2ac;
-}
-
-.btn-eliminar {
-  background-color: #ff6b6b;
-  color: white;
-}
-.btn-eliminar:hover {
-  background-color: #ff2e2e;
-}
-
-
-
-
-.task button {
-  border: none;
-  padding: 0.5rem 1.2rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;      /* evita que el texto del botón se parta */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 .task.completed {
-  background-color: #f7e5e0;
-  text-decoration: line-through;
   opacity: 0.7;
+  text-decoration: line-through;
 }
 
-.task-actions button {
-  background: none;
-  border: none;
-  font-size: 100%;
-  margin-left: 2%;
-  cursor: pointer;
-  transition: color 0.2s;
+.task-text {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
 }
 
-.task-actions .done {
-  color: #4fd1c5;
+/* --- Etiquetas --- */
+.etiquetas span {
+  font-size: 0.8rem;
+  padding: 3px 6px;
+  border-radius: 6px;
+  color: #fff;
+  margin-right: 4px;
 }
 
-.task-actions .done:hover {
-  color: #34b8ab;
+/* --- Acciones de tareas --- */
+.task-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.task-actions .delete {
-  color: #ff6b6b;
+.task-actions a,
+.btn-sub-completar,
+.btn-sub-editar,
+.btn-sub-eliminar {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
+  transition: background 0.3s ease;
 }
 
-.task-actions .delete:hover {
-  color: #ff2e2e;
+.btn-editar { background-color: #17a2b8; }
+.btn-editar:hover { background-color: #11707f; }
+
+.btn-completar { background-color: #28a745; }
+.btn-completar:hover { background-color: #1e7e34; }
+
+.btn-eliminar { background-color: #dc3545; }
+.btn-eliminar:hover { background-color: #b02a37; }
+
+/* --- Subtareas --- */
+.subtask-list {
+  list-style: none;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.subtask {
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border-left: 3px solid #6ef0e5;
+}
+
+.subtask.completed {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+
+/* --- Adjuntos --- */
+.attachments {
+  margin-top: 6px;
+  padding-left: 1.2rem;
+}
+
+.attachments li {
+  margin-bottom: 4px;
+}
+
+/* --- Responsivo --- */
+@media (max-width: 768px) {
+  .todo-container {
+    width: 95%;
+    padding: 1rem;
+    margin: 2% auto;
+  }
+  .task-form,
+  .task-form2 {
+    grid-template-columns: 1fr;
+  }
+  .task-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 /* LOGIN */
@@ -985,3 +899,227 @@ body {
   color: #ff2e2e;
 }
 
+/*COMENTARIOS*/
+
+
+/* --- Título --- */
+.todo-container h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+
+/* --- Textarea --- */
+textarea {
+  width: 100%;
+  font-size: 1rem;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+textarea:focus {
+  border-color: #007BFF;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+/* --- Botón y enlace --- */
+button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  margin-right: 10px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+a {
+  color: #007BFF;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* --- Mensaje de éxito --- */
+.success {
+  background-color: #e6f7e6;
+  color: #2e7d32;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #b2dfdb;
+  text-align: center;
+}
+
+/*GESTIONAR USUARIOS*/
+
+/* CONTENEDOR PRINCIPAL */
+.usuarios-container {
+  background-color: #fff;
+  padding: 5%;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 800px;
+  position: relative;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  max-height: 80vh;
+  overflow-y: auto;
+  margin: 0 auto;
+}
+
+/* TÍTULO */
+.usuarios-container h1 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* MENSAJES DE ERROR Y ÉXITO */
+.error {
+  background-color: #ffe6e6;
+  color: #ff2e2e;
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.exito {
+  background-color: #e6fff2;
+  color: #38b2ac;
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* FORMULARIO DE USUARIOS */
+.usuario-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+  justify-content: center;
+}
+
+.usuario-form input[type="text"],
+.usuario-form input[type="email"],
+.usuario-form input[type="password"],
+.usuario-form select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  flex: 1;
+  min-width: 45%;
+}
+
+.usuario-form button {
+  background-color: #74ebd5;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.usuario-form button:hover {
+  background-color: #4fd1c5;
+}
+
+.usuario-form a {
+  text-decoration: none;
+  background-color: #ff6b6b;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.usuario-form a:hover {
+  background-color: #ff2e2e;
+}
+
+/* LISTA DE USUARIOS */
+.usuarios-lista {
+  list-style: none;
+  width: 100%;
+  padding: 0;
+}
+
+.usuarios-lista li {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.usuarios-lista strong {
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+}
+
+.usuarios-lista span {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.usuarios-lista a {
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-left: 10px;
+  transition: color 0.2s ease;
+}
+
+.usuarios-lista a[href*="editar"] {
+  color: #4fd1c5;
+}
+
+.usuarios-lista a[href*="editar"]:hover {
+  color: #38b2ac;
+}
+
+.usuarios-lista a[href*="eliminar"] {
+  color: #ff6b6b;
+}
+
+.usuarios-lista a[href*="eliminar"]:hover {
+  color: #ff2e2e;
+}

@@ -92,7 +92,7 @@ if (isset($_GET['editar'])) {
 <head>
     <meta charset="UTF-8">
     <title>Gestionar Usuarios</title>
-    <link rel="stylesheet" href="style/usuarios.css">
+    <link rel="stylesheet" href="style/todo.css">
 </head>
 <body>
     <?php include('header.php'); ?>
