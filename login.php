@@ -48,6 +48,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             <input type="email" name="email" placeholder="Correo electrónico" required>
             <input type="password" name="password" placeholder="Contraseña" required>
             <button type="submit">Entrar</button>
+            <a href="olvido_contraseña.php">Olvide la contraseña</a>
             <p class="register-text">¿No tienes cuenta? <a href="registro.php">Regístrate</a></p>
         </form>
     </div>
