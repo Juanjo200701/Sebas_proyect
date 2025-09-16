@@ -1246,3 +1246,114 @@ a:hover {
 .usuarios-lista a[href*="eliminar"]:hover {
   color: #ff2e2e;
 }
+
+/*ESTILOS DE RECUPERAR CONTRASEÑA*/
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Tarjeta central */
+.card {
+  background-color: #ffffff;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Título */
+.card h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+  text-align: center;
+}
+
+/* Formulario */
+form div {
+  margin-bottom: 20px;
+}
+
+/* Etiquetas */
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #555;
+}
+
+/* Campo de email */
+input[type="email"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+input[type="email"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Botón */
+button[type="submit"] {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+button[type="submit"]:active {
+  transform: scale(0.97);
+}
+
+/* Mensaje de estado (éxito o error) */
+.card p {
+  margin-top: 20px;
+  font-size: 14px;
+  text-align: center;
+  color: #dc3545; /* por defecto: rojo para errores */
+}
+
+/* Ejemplo si usas clases dinámicas como "success" */
+.success {
+  color: #28a745;
+}
+.error {
+  color: #dc3545;
+}
+/*boton de olvide contraseña del login*/
+.btn-boton-contraseña {
+  display: inline-block;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #007bff; /* Azul moderno */
+  text-decoration: none;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+  text-align: center;
+  width: 100%;
+}
+
+.btn-boton-contraseña:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+

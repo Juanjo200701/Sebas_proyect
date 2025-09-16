@@ -81,8 +81,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="css/forgot_password.css">
   <title>Recuperar contraseña</title>
+  <link rel="stylesheet" href="style/todo.css">
 </head>
 <body>
   <div class="card">
