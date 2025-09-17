@@ -11,12 +11,26 @@ $usuario_id = $_SESSION['usuario_id'];
 $id = intval($_GET['id'] ?? 0);
 $mensaje = "";
 
-// Buscar la tarea del usuario logueado
-$stmt = $pdo->prepare("SELECT * FROM tareas WHERE id = ? AND asignado_id = ?");
-$stmt->execute([$id, $usuario_id]);
+// Buscar la tarea
+$stmt = $pdo->prepare("SELECT * FROM tareas WHERE id = ?");
+$stmt->execute([$id]);
 $tarea = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$tarea) {
+    die("La tarea no existe.");
+}
+
+// Verifica acceso: asignado, creador o admin
+$stmtUser = $pdo->prepare("SELECT rol FROM usuarios WHERE id = ?");
+$stmtUser->execute([$usuario_id]);
+$userRow = $stmtUser->fetch(PDO::FETCH_ASSOC);
+$userRol = $userRow['rol'] ?? 'member';
+
+if (
+    $tarea['asignado_id'] != $usuario_id &&
+    $tarea['creador_id'] != $usuario_id &&
+    $userRol !== 'admin'
+) {
     die("No tienes acceso a esta tarea.");
 }
 
@@ -24,8 +38,8 @@ if (!$tarea) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $comentario = trim($_POST['comentario'] ?? '');
 
-    $stmt = $pdo->prepare("UPDATE tareas SET comentario = ? WHERE id = ? AND asignado_id = ?");
-    $stmt->execute([$comentario, $id, $usuario_id]);
+    $stmt = $pdo->prepare("UPDATE tareas SET comentario = ? WHERE id = ?");
+    $stmt->execute([$comentario, $id]);
 
     $mensaje = "Comentario guardado correctamente.";
     $tarea['comentario'] = $comentario; // actualizar variable
@@ -54,5 +68,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <a href="inicio.php">Volver</a>
     </form>
   </main>
-</body>
-</html>

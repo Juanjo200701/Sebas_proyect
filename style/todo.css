@@ -1356,4 +1356,18 @@ button[type="submit"]:active {
   text-decoration: underline;
 }
 
+.btn-ver-comentario{
+     display: inline-block;
+    background-color: #007BFF; /* azul vibrante */
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: sans-serif;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+}
+
 
