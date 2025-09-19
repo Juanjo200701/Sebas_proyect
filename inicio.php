@@ -69,6 +69,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_tarea'])) {
     $proyecto_id = intval($_POST['proyecto_id'] ?? 0);
     $etiquetas_sel = $_POST['etiquetas'] ?? [];
     $asignado_id = ($userRol === 'admin') ? intval($_POST['asignado_id'] ?? 0) : $usuario_id;
+    $fecha_vencimiento = $_POST['fecha_vencimiento'] ?? null;
+
+    if ($fecha_vencimiento && strtotime($fecha_vencimiento) < strtotime(date('Y-m-d'))) {
+      $errores[] = "La fecha de vencimiento no puede ser anterior a hoy.";
+    }
 
     if (empty($titulo)) {
         $errores[] = "El título de la tarea no puede estar vacío.";
@@ -76,13 +81,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_tarea'])) {
         $errores[] = "Debes seleccionar un proyecto.";
     } elseif ($userRol === 'admin' && $asignado_id <= 0) {
         $errores[] = "Debes seleccionar el usuario asignado.";
-    } else {
+    } elseif ($fecha_vencimiento && strtotime($fecha_vencimiento) < strtotime(date('Y-m-d'))) {
+        $errores[] = "La fecha de vencimiento no puede ser anterior a hoy.";
+    }else {
         if ($userRol === 'admin') {
-            $stmt = $pdo->prepare("UPDATE tareas SET titulo=?, proyecto_id=?, asignado_id=? WHERE id=?");
-            $stmt->execute([$titulo, $proyecto_id, $asignado_id, $id]);
+            $stmt = $pdo->prepare("UPDATE tareas SET titulo=?, proyecto_id=?, asignado_id=?, fecha_vencimiento=? WHERE id=?");
+            $stmt->execute([$titulo, $proyecto_id, $asignado_id, $fecha_vencimiento, $id]);
         } else {
-            $stmt = $pdo->prepare("UPDATE tareas SET titulo=?, proyecto_id=? WHERE id=? AND asignado_id=?");
-            $stmt->execute([$titulo, $proyecto_id, $id, $usuario_id]);
+            $stmt = $pdo->prepare("UPDATE tareas SET titulo=?, proyecto_id=?, fecha_vencimiento=? WHERE id=? AND asignado_id=?");
+            $stmt->execute([$titulo, $proyecto_id, $fecha_vencimiento, $id, $usuario_id]);
         }
 
         $pdo->prepare("DELETE FROM tarea_etiqueta WHERE tarea_id=?")->execute([$id]);
@@ -282,6 +289,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       color: #333;
       min-width: 160px;
     }
+    .proyectos-buscar, .estado-buscar, .asignado-buscar, .etiqueta-buscar {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      background: #f7f7f7;
+      color: #333;
+      font-size: 1rem;
+      margin-right: 10px;
+      min-width: 180px;
+      transition: border-color 0.2s;
+    }
+    .proyectos-buscar:focus, .estado-buscar:focus, .asignado-buscar:focus, .etiqueta-buscar:focus {
+      border-color: #0078d7;
+      outline: none;
+    }
+    .proyectos-buscar-opcion, .estado-buscar-opcion, .asignado-buscar-opcion, .etiqueta-buscar-opcion {
+      color: #888;
+      background: #eaeaea;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -354,6 +381,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       </select>
     </div>
 
+    <div class="form-group">
+      <label for="fecha_vencimiento">Fecha de vencimiento:</label>
+      <input type="date" id="fecha_vencimiento" name="fecha_vencimiento"
+        value="<?= htmlspecialchars($tarea_editar['fecha_vencimiento'] ?? '') ?>">
+    </div>
+
     <div class="form-actions">
       <button type="submit" name="editar_tarea">Guardar cambios</button>
       <a href="inicio.php" class="btn-cancelar-editar-admin">Cancelar</a>
@@ -411,7 +444,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
           <option value="<?= $tarea['id'] ?>"><?= htmlspecialchars($tarea['titulo']) ?></option>
         <?php endforeach; ?>
       </select>
-      <input type="text" name="titulo" placeholder=" Nueva Subtarea" required />
+      <input type="text" name="titulo" class="input-subtarea" placeholder=" Nueva Subtarea" required />
       <button type="submit" name="nueva_subtarea">Añadir</button>
     </form>
 
@@ -460,6 +493,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
               Proyecto: <?= htmlspecialchars($tarea['proyecto_nombre'] ?? 'Sin proyecto') ?>
               <br>
               Asignado a: <?= htmlspecialchars($tarea['asignado_nombre'] ?? 'Sin usuario') ?>
+              <?php if (!empty($tarea['fecha_vencimiento'])): ?>
+                <br>Vence: <span style="color:#d9534f"><?= htmlspecialchars(date('d/m/Y', strtotime($tarea['fecha_vencimiento']))) ?></span>
+              <?php endif; ?>
             </div>
           </div>
 

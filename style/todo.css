@@ -203,6 +203,11 @@ body {
     transform: scale(0.98); /* pequeña contracción al hacer clic */
 }
  /*botones para las subtareas*/
+
+.input-subtarea{
+  position: relative;
+  top: 17px;
+}
 .btn-sub-completar {
     display: inline-block;
     padding: 10px 22px;
@@ -256,8 +261,8 @@ body {
     background-color: #117a8b;           /* Azul aún más oscuro al hacer clic */
     transform: scale(0.97);
 }
-/*boton eliminar subtarea*/
 
+/*boton eliminar subtarea*/
 .btn-sub-eliminar {
     display: inline-block;
     padding: 10px 22px;
@@ -1453,7 +1458,9 @@ input[type="text"] {
   font-size: 14px;
   transition: border-color 0.3s;
   box-sizing: border-box;
+  margin-bottom: 16px; /* 👈 Agrega este valor */
 }
+
 input[type="text"]:focus {
   border-color: #007bff;
   outline: none;
@@ -1469,6 +1476,8 @@ input[type="text"]:focus {
   margin-right: 10px;
   min-width: 180px;
   transition: border-color 0.2s;
+    margin-bottom: 16px; /* 👈 Agrega este valor */
+
 }
 
 .proyectos-buscar:focus {
@@ -1492,6 +1501,8 @@ input[type="text"]:focus {
   margin-right: 10px;
   min-width: 140px;
   transition: border-color 0.2s;
+    margin-bottom: 16px; /* 👈 Agrega este valor */
+
 }
 .estado-buscar:focus {
   border-color: #0078d7;
@@ -1513,6 +1524,8 @@ input[type="text"]:focus {
   margin-right: 10px;
   min-width: 140px;
   transition: border-color 0.2s;
+    margin-bottom: 16px; /* 👈 Agrega este valor */
+
 }
 .asignado-buscar:focus {
   border-color: #0078d7;
@@ -1534,6 +1547,8 @@ input[type="text"]:focus {
   margin-right: 10px;
   min-width: 140px;
   transition: border-color 0.2s;
+    margin-bottom: 16px; /* 👈 Agrega este valor */
+
 }
 .etiqueta-buscar:focus {
   border-color: #0078d7;
