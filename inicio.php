@@ -115,16 +115,43 @@ if (isset($_GET['eliminar'])) {
     }
 }
 
-// Consultar tareas (solo top-level) — añadimos el nombre del proyecto y usuario asignado via JOIN
-$stmt = $pdo->prepare("
+// --- FILTROS Y BUSQUEDA ---
+$where = "WHERE t.parent_task_id IS NULL";
+$params = [];
+
+if (!empty($_GET['buscar'])) {
+    $where .= " AND t.titulo LIKE ?";
+    $params[] = '%' . $_GET['buscar'] . '%';
+}
+if (!empty($_GET['proyecto_id'])) {
+    $where .= " AND t.proyecto_id = ?";
+    $params[] = intval($_GET['proyecto_id']);
+}
+if (!empty($_GET['estado'])) {
+    $where .= " AND t.estado = ?";
+    $params[] = $_GET['estado'];
+}
+if (!empty($_GET['asignado_id'])) {
+    $where .= " AND t.asignado_id = ?";
+    $params[] = intval($_GET['asignado_id']);
+}
+if (!empty($_GET['etiqueta_id'])) {
+    $where .= " AND EXISTS (
+        SELECT 1 FROM tarea_etiqueta te WHERE te.tarea_id = t.id AND te.etiqueta_id = ?
+    )";
+    $params[] = intval($_GET['etiqueta_id']);
+}
+
+$sql = "
     SELECT t.*, p.nombre AS proyecto_nombre, u.nombre AS asignado_nombre
     FROM tareas t
     LEFT JOIN proyectos p ON t.proyecto_id = p.id
     LEFT JOIN usuarios u ON t.asignado_id = u.id
-    WHERE t.parent_task_id IS NULL
+    $where
     ORDER BY t.creado_en DESC
-");
-$stmt->execute();
+";
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
 $tareas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Datos para edición
@@ -280,82 +307,101 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       </form>
     <?php endif; ?>
 
-    <!-- Formulario editar tarea -->
-    <?php if ($tarea_editar): ?>
-      <form class="task-form" method="post">
-        <input type="hidden" name="tarea_id" value="<?= $tarea_editar['id'] ?>">
-        <input type="text" name="titulo" required value="<?= htmlspecialchars($tarea_editar['titulo']) ?>" />
+    <form class="task-form" method="post">
+  <?php if ($tarea_editar): ?>
+    <input type="hidden" name="tarea_id" value="<?= $tarea_editar['id'] ?>">
 
-        <?php if ($userRol === 'admin'): ?>
-          <label for="asignado_editar">Asignar a:</label>
-          <select name="asignado_id" id="asignado_editar" required>
-            <option value="">-- Selecciona usuario --</option>
-            <?php foreach ($usuarios as $u): ?>
-              <option value="<?= $u['id'] ?>" <?= (isset($tarea_editar['asignado_id']) && $tarea_editar['asignado_id'] == $u['id']) ? 'selected' : '' ?>>
-                <?= htmlspecialchars($u['nombre']) ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-        <?php endif; ?>
+    <div class="form-group">
+      <label for="titulo">Título:</label>
+      <input type="text" id="titulo" name="titulo" required value="<?= htmlspecialchars($tarea_editar['titulo']) ?>" />
+    </div>
 
-        <label for="proyecto_editar">Proyecto:</label>
-        <select name="proyecto_id" id="proyecto_editar" required>
-          <option value="">-- Selecciona un proyecto --</option>
-          <?php foreach ($proyectos as $p): ?>
-            <option value="<?= $p['id'] ?>" <?= (isset($tarea_editar['proyecto_id']) && $tarea_editar['proyecto_id'] == $p['id']) ? 'selected' : '' ?>>
-              <?= htmlspecialchars($p['nombre']) ?>
+    <?php if ($userRol === 'admin'): ?>
+      <div class="form-group">
+        <label for="asignado_editar">Asignar a:</label>
+        <select name="asignado_id" id="asignado_editar" required>
+          <option value="">-- Selecciona usuario --</option>
+          <?php foreach ($usuarios as $u): ?>
+            <option value="<?= $u['id'] ?>" <?= (isset($tarea_editar['asignado_id']) && $tarea_editar['asignado_id'] == $u['id']) ? 'selected' : '' ?>>
+              <?= htmlspecialchars($u['nombre']) ?>
             </option>
           <?php endforeach; ?>
         </select>
-
-        <label for="etiquetas_editar">Etiqueta:</label>
-        <select name="etiquetas[]" id="etiquetas_editar">
-          <option value="">-- Sin etiqueta --</option>
-          <?php foreach ($etiquetas as $etiqueta): ?>
-            <option value="<?= $etiqueta['id'] ?>" <?= in_array($etiqueta['id'], $etiquetas_tarea) ? 'selected' : '' ?>>
-              <?= htmlspecialchars($etiqueta['nombre']) ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-
-        <button type="submit" name="editar_tarea">Guardar cambios</button>
-        <a href="inicio.php"class="btn-cancelar-editar-admin">Cancelar</a>
-      </form>
-
-    <?php else: ?>
-      <!-- Formulario nueva tarea -->
-      <form class="task-form" method="post">
-        <input type="text" name="titulo" placeholder=" Nueva Tarea " />
-
-        <?php if ($userRol === 'admin'): ?>
-          <label for="asignado_nueva">Asignar a:</label>
-          <select name="asignado_id" id="asignado_nueva" required>
-            <option value="">-- Selecciona usuario --</option>
-            <?php foreach ($usuarios as $u): ?>
-              <option value="<?= $u['id'] ?>"><?= htmlspecialchars($u['nombre']) ?></option>
-            <?php endforeach; ?>
-          </select>
-        <?php endif; ?>
-
-        <label for="proyecto_nueva">Proyecto:</label>
-        <select name="proyecto_id" id="proyecto_nueva">
-          <option value="">-- Sin Proyecto --</option>
-          <?php foreach ($proyectos as $p): ?>
-            <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['nombre']) ?></option>
-          <?php endforeach; ?>
-        </select>
-
-        <label for="etiquetas_nueva">Etiqueta:</label>
-        <select name="etiquetas[]" id="etiquetas_nueva">
-          <option value="">-- Sin etiqueta --</option>
-          <?php foreach ($etiquetas as $etiqueta): ?>
-            <option value="<?= $etiqueta['id'] ?>"><?= htmlspecialchars($etiqueta['nombre']) ?></option>
-          <?php endforeach; ?>
-        </select>
-
-        <button type="submit" name="nueva_tarea">Añadir</button>
-      </form>
+      </div>
     <?php endif; ?>
+
+    <div class="form-group">
+      <label for="proyecto_editar">Proyecto:</label>
+      <select name="proyecto_id" id="proyecto_editar" required>
+        <option value="">-- Selecciona un proyecto --</option>
+        <?php foreach ($proyectos as $p): ?>
+          <option value="<?= $p['id'] ?>" <?= (isset($tarea_editar['proyecto_id']) && $tarea_editar['proyecto_id'] == $p['id']) ? 'selected' : '' ?>>
+            <?= htmlspecialchars($p['nombre']) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="etiquetas_editar">Etiqueta:</label>
+      <select name="etiquetas[]" id="etiquetas_editar">
+        <option value="">-- Sin etiqueta --</option>
+        <?php foreach ($etiquetas as $etiqueta): ?>
+          <option value="<?= $etiqueta['id'] ?>" <?= in_array($etiqueta['id'], $etiquetas_tarea) ? 'selected' : '' ?>>
+            <?= htmlspecialchars($etiqueta['nombre']) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" name="editar_tarea">Guardar cambios</button>
+      <a href="inicio.php" class="btn-cancelar-editar-admin">Cancelar</a>
+    </div>
+
+  <?php else: ?>
+    <div class="form-group">
+      <label for="titulo">Título:</label>
+      <input type="text" id="titulo" name="titulo" placeholder="Nueva Tarea" />
+    </div>
+
+    <?php if ($userRol === 'admin'): ?>
+      <div class="form-group">
+        <label for="asignado_nueva">Asignar a:</label>
+        <select name="asignado_id" id="asignado_nueva" required>
+          <option value="">-- Selecciona usuario --</option>
+          <?php foreach ($usuarios as $u): ?>
+            <option value="<?= $u['id'] ?>"><?= htmlspecialchars($u['nombre']) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    <?php endif; ?>
+
+    <div class="form-group">
+      <label for="proyecto_nueva">Proyecto:</label>
+      <select name="proyecto_id" id="proyecto_nueva">
+        <option value="">-- Sin Proyecto --</option>
+        <?php foreach ($proyectos as $p): ?>
+          <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['nombre']) ?></option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="etiquetas_nueva">Etiqueta:</label>
+      <select name="etiquetas[]" id="etiquetas_nueva">
+        <option value="">-- Sin etiqueta --</option>
+        <?php foreach ($etiquetas as $etiqueta): ?>
+          <option value="<?= $etiqueta['id'] ?>"><?= htmlspecialchars($etiqueta['nombre']) ?></option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" name="nueva_tarea">Añadir</button>
+    </div>
+  <?php endif; ?>
+</form>
 
     <!-- Formulario nueva subtarea -->
     <form class="task-form2" method="post">
@@ -367,6 +413,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       </select>
       <input type="text" name="titulo" placeholder=" Nueva Subtarea" required />
       <button type="submit" name="nueva_subtarea">Añadir</button>
+    </form>
+
+    <!-- Formulario de búsqueda y filtros -->
+    <form method="get" class="filtros-form" style="margin-bottom:20px;">
+      <input type="text" name="buscar" placeholder="🔍Buscar por título..." value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>">
+      <select name="proyecto_id" class="proyectos-buscar">
+        <option value=""class="proyectos-buscar-opcion">Todos los proyectos</option>
+        <?php foreach ($proyectos as $p): ?>
+          <option value="<?= $p['id'] ?>" <?= (isset($_GET['proyecto_id']) && $_GET['proyecto_id'] == $p['id']) ? 'selected' : '' ?>>
+            <?= htmlspecialchars($p['nombre']) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+      <select name="estado" class="estado-buscar">
+        <option value=""class="estado-buscar-opcion">Todos los estados</option>
+        <option value="todo" <?= (isset($_GET['estado']) && $_GET['estado'] == 'todo') ? 'selected' : '' ?>>Pendiente</option>
+        <option value="done" <?= (isset($_GET['estado']) && $_GET['estado'] == 'done') ? 'selected' : '' ?>>Completada</option>
+      </select>
+      <select name="asignado_id" class="asignado-buscar">
+        <option value=""class="asignado-buscar-opcion">Todos los responsables</option>
+        <?php foreach ($usuarios as $u): ?>
+          <option value="<?= $u['id'] ?>" <?= (isset($_GET['asignado_id']) && $_GET['asignado_id'] == $u['id']) ? 'selected' : '' ?>>
+            <?= htmlspecialchars($u['nombre']) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+      <select name="etiqueta_id" class="etiqueta-buscar">
+        <option value=""class="etiqueta-buscar-opcion">Todas las etiquetas</option>
+        <?php foreach ($etiquetas as $et): ?>
+          <option value="<?= $et['id'] ?>" <?= (isset($_GET['etiqueta_id']) && $_GET['etiqueta_id'] == $et['id']) ? 'selected' : '' ?>>
+            <?= htmlspecialchars($et['nombre']) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+      <button type="submit">Filtrar</button>
     </form>
 
     <!-- Lista de tareas -->
@@ -405,10 +486,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
               <a href="?completar=<?= $tarea['id'] ?>" class="btn-completar">Completar</a>
             <?php endif; ?>
             <?php if (empty($tarea['comentario'])): ?>
-  <a href="comentarios.php?id=<?= $tarea['id'] ?>" class="btn-comentar">Comentar</a>
-<?php else: ?>
-  <a href="comentarios.php?id=<?= $tarea['id'] ?>" class="btn-ver-comentario">Ver comentario</a>
-<?php endif; ?>
+              <a href="comentarios.php?id=<?= $tarea['id'] ?>" class="btn-comentar">Comentar</a>
+            <?php else: ?>
+              <a href="comentarios.php?id=<?= $tarea['id'] ?>" class="btn-ver-comentario">Ver comentario</a>
+            <?php endif; ?>
             <a href="?eliminar=<?= $tarea['id'] ?>" onclick="return confirm('¿Seguro que deseas eliminar esta tarea?')" class='btn-eliminar'>Eliminar</a>
           </div>
 

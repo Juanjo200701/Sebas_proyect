@@ -1444,4 +1444,103 @@ input[type="password"] {
   width: 100%;
   max-width: 400px;
 }
+/*BUSCADOR DE INICIO*/
+input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+/* Estilo para el select de proyectos en el filtro */
+.proyectos-buscar {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background: #f7f7f7;
+  color: #333;
+  font-size: 1rem;
+  margin-right: 10px;
+  min-width: 180px;
+  transition: border-color 0.2s;
+}
 
+.proyectos-buscar:focus {
+  border-color: #0078d7;
+  outline: none;
+}
+
+.proyectos-buscar-opcion {
+  color: #888;
+  background: #eaeaea;
+  font-style: italic;
+}
+/*estado buscar*/
+.estado-buscar {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background: #f7f7f7;
+  color: #333;
+  font-size: 1rem;
+  margin-right: 10px;
+  min-width: 140px;
+  transition: border-color 0.2s;
+}
+.estado-buscar:focus {
+  border-color: #0078d7;
+  outline: none;
+}
+.estado-buscar-opcion {
+  color: #888;
+  background: #eaeaea;
+  font-style: italic;
+}
+/*asignado buscar*/
+.asignado-buscar {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background: #f7f7f7;
+  color: #333;
+  font-size: 1rem;
+  margin-right: 10px;
+  min-width: 140px;
+  transition: border-color 0.2s;
+}
+.asignado-buscar:focus {
+  border-color: #0078d7;
+  outline: none;
+}
+.asignado-buscar-opcion {
+  color: #888;
+  background: #eaeaea;
+  font-style: italic;
+}
+/*etiquetas buscar*/
+.etiqueta-buscar {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background: #f7f7f7;
+  color: #333;
+  font-size: 1rem;
+  margin-right: 10px;
+  min-width: 140px;
+  transition: border-color 0.2s;
+}
+.etiqueta-buscar:focus {
+  border-color: #0078d7;
+  outline: none;
+}
+.etiqueta-buscar-opcion {
+  color: #888;
+  background: #eaeaea;
+  font-style: italic;
+}
