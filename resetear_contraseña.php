@@ -40,10 +40,11 @@ if (isset($_GET["token"])) {
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="css/reset_password.css">
   <title>Restablecer contraseña</title>
+  <link rel="stylesheet" href="style/todo.css" />
 </head>
 <body>
+<div class="card2">
   <div class="container">
     <h2>Restablecer contraseña</h2>
     <?php if (!empty($mensaje)): ?>
@@ -58,5 +59,6 @@ if (isset($_GET["token"])) {
       </form>
     <?php endif; ?>
   </div>
+</div>
 </body>
 </html>

@@ -96,7 +96,7 @@ body {
 
 
 /*  INICIO */
-/* --- Contenedor principal --- */
+/* Contenedor principal */
 .todo-container {
   background-color: #fff;
   padding: 2rem;
@@ -119,7 +119,7 @@ body {
   color: #333;
 }
 
-/* --- Mensajes --- */
+/* Mensajes */
 .error {
   background-color: #fdecea;
   color: #b71c1c;
@@ -138,7 +138,7 @@ body {
   margin-bottom: 10px;
 }
 
-/* --- Formularios --- */
+/* Formularios */
 /* Contenedor general de formularios */
 .task-form,
 .task-form2 {
@@ -316,7 +316,7 @@ h2, h3 {
   transform: scale(1.03);
 }
 
-/* --- Lista de tareas --- */
+/* Lista de tareas */
 .task-list {
   list-style: none;
   padding: 0;
@@ -347,7 +347,7 @@ h2, h3 {
   color: #333;
 }
 
-/* --- Etiquetas --- */
+/* Etiquetas */
 .etiquetas span {
   font-size: 0.8rem;
   padding: 3px 6px;
@@ -356,7 +356,7 @@ h2, h3 {
   margin-right: 4px;
 }
 
-/* --- Acciones de tareas --- */
+/* Acciones de tareas */
 .task-actions {
   display: flex;
   gap: 8px;
@@ -385,7 +385,7 @@ h2, h3 {
 .btn-eliminar { background-color: #dc3545; }
 .btn-eliminar:hover { background-color: #b02a37; }
 
-/* --- Subtareas --- */
+/* Subtareas */
 .subtask-list {
   list-style: none;
   padding-left: 1.2rem;
@@ -406,7 +406,7 @@ h2, h3 {
   text-decoration: line-through;
 }
 
-/* --- Adjuntos --- */
+/* Adjuntos */
 .attachments {
   margin-top: 6px;
   padding-left: 1.2rem;
@@ -416,7 +416,7 @@ h2, h3 {
   margin-bottom: 4px;
 }
 
-/* --- Responsivo --- */
+/* Responsivo */
 @media (max-width: 768px) {
   .todo-container {
     width: 95%;
@@ -1357,17 +1357,91 @@ button[type="submit"]:active {
 }
 
 .btn-ver-comentario{
-     display: inline-block;
-    background-color: #007BFF; /* azul vibrante */
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    font-family: sans-serif;
-    transition: background-color 0.3s, transform 0.2s;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
+  display: inline-block;
+  background-color: #007BFF; /* azul vibrante */
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  font-family: sans-serif;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/*RESETEAR CONTRASEÑA*/
+.reset-container {
+  background-color: #ffffff;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+}
+.reset-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+  text-align: center;
+}
+.reset-container form div {
+  margin-bottom: 20px;
+}
+.reset-container label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #555;
+}
+.reset-container input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+.reset-container input[type="password"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+.reset-container button[type="submit"] {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+.reset-container button[type="submit"]:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+.reset-container button[type="submit"]:active {
+  transform: scale(0.97);
+}
+input[type="password"] {
+  margin-bottom: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+.card2{
+  background-color: #ffffff;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
 
