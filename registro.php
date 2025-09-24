@@ -6,11 +6,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $clave = trim($_POST['password'] ?? '');
-    $rol = $_POST['rol']; // Valor por defecto
+    $rol = $_POST['rol']; 
 
     $errores = [];
 
-    // Validaciones
     if (empty($nombre)) {
         $errores[] = 'El nombre es obligatorio.';
     }
@@ -25,9 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errores[] = 'La contraseña debe tener al menos 6 caracteres.';
     }
 
-    // Si no hay errores, registrar usuario
     if (empty($errores)) {
-        // Verificar si el correo ya existe
         $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = ?");
         $stmt->execute([$email]);
         if ($stmt->fetch()) {

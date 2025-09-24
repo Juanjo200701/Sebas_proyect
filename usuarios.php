@@ -2,7 +2,6 @@
 session_start();
 include("database.php");
 
-// Solo admin puede acceder
 $usuario_id = $_SESSION['usuario_id'] ?? null;
 if (!$usuario_id) {
     header("Location: login.php");
@@ -19,7 +18,6 @@ if (($userRow['rol'] ?? 'member') !== 'admin') {
 $errores = [];
 $exito = "";
 
-// Crear usuario (solo para pruebas, normalmente solo registro)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevo_usuario'])) {
     $nombre = trim($_POST['nombre'] ?? '');
     $email = trim($_POST['email'] ?? '');
@@ -46,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevo_usuario'])) {
     }
 }
 
-// Editar usuario (solo nombre, rol)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_usuario'])) {
     $id = intval($_POST['usuario_id']);
     $nombre = trim($_POST['nombre'] ?? '');
@@ -62,10 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_usuario'])) {
     }
 }
 
-// Eliminar usuario
 if (isset($_GET['eliminar'])) {
     $id = intval($_GET['eliminar']);
-    if ($id !== $usuario_id) { // No puede eliminarse a sí mismo
+    if ($id !== $usuario_id) { 
         $stmt = $pdo->prepare("DELETE FROM usuarios WHERE id=?");
         $stmt->execute([$id]);
         $exito = "Usuario eliminado.";
@@ -74,11 +70,9 @@ if (isset($_GET['eliminar'])) {
     }
 }
 
-// Obtener usuarios
 $stmt = $pdo->query("SELECT id, nombre, email, rol FROM usuarios ORDER BY id ASC");
 $usuarios = $stmt->fetchAll();
 
-// Si se va a editar, obtener datos del usuario
 $usuario_editar = null;
 if (isset($_GET['editar'])) {
     $id = intval($_GET['editar']);

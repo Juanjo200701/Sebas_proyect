@@ -11,7 +11,6 @@ $usuario_id = $_SESSION['usuario_id'];
 $id = intval($_GET['id'] ?? 0);
 $mensaje = "";
 
-// Buscar la tarea
 $stmt = $pdo->prepare("SELECT * FROM tareas WHERE id = ?");
 $stmt->execute([$id]);
 $tarea = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -20,7 +19,6 @@ if (!$tarea) {
     die("La tarea no existe.");
 }
 
-// Verifica acceso: asignado, creador o admin
 $stmtUser = $pdo->prepare("SELECT rol FROM usuarios WHERE id = ?");
 $stmtUser->execute([$usuario_id]);
 $userRow = $stmtUser->fetch(PDO::FETCH_ASSOC);
@@ -34,7 +32,6 @@ if (
     die("No tienes acceso a esta tarea.");
 }
 
-// Guardar comentario al enviar formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $comentario = trim($_POST['comentario'] ?? '');
 
@@ -42,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute([$comentario, $id]);
 
     $mensaje = "Comentario guardado correctamente.";
-    $tarea['comentario'] = $comentario; // actualizar variable
+    $tarea['comentario'] = $comentario;
 }
 ?>
 <!DOCTYPE html>

@@ -21,7 +21,6 @@ $ALLOWED_MIME = [
     'image/gif'  => 'gif'
 ];
 
-// Traer datos actuales del usuario
 $stmt = $pdo->prepare("SELECT email, foto, password FROM usuarios WHERE id = ?");
 $stmt->execute([$usuario_id]);
 $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -29,23 +28,18 @@ if (!$usuario) {
     die("Usuario no encontrado.");
 }
 
-// Procesar formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // campos
     $nombre = trim($_POST['nombre'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password_actual = $_POST['current-password'] ?? '';
     $password_nueva = $_POST['new-password'] ?? '';
     $password_confirmar = $_POST['confirm-password'] ?? '';
 
-    // =========================
-    // 1) Validar correo (si cambió)
-    // =========================
+
     if (!empty($email) && $email !== $usuario['email']) {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errores[] = "El correo no tiene formato válido.";
         } else {
-            // verificar unicidad
             $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = ? AND id <> ?");
             $stmt->execute([$email, $usuario_id]);
             if ($stmt->fetch()) {
@@ -54,9 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // =========================
-    // 2) Validar cambio de contraseña (si aplica)
-    // =========================
     if (!empty($password_nueva) || !empty($password_confirmar)) {
         if (empty($password_actual)) {
             $errores[] = "Debes ingresar tu contraseña actual para cambiarla.";
@@ -73,13 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // =========================
-    // 3) Validar y procesar foto (si se subió)
-    // =========================
     $nueva_ruta_en_db = null;
     if (isset($_FILES['profile-photo']) && $_FILES['profile-photo']['error'] !== UPLOAD_ERR_NO_FILE) {
         $fileErr = $_FILES['profile-photo']['error'];
-        // errores comunes
         if ($fileErr !== UPLOAD_ERR_OK) {
             $msg = "Error en la subida (código: $fileErr). ";
             switch ($fileErr) {
@@ -104,11 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $errores[] = $msg;
         } else {
-            // Tamaño
             if ($_FILES['profile-photo']['size'] > $MAX_FILE_SIZE) {
                 $errores[] = "La imagen excede el límite de " . ($MAX_FILE_SIZE / (1024 * 1024)) . " MB.";
             } else {
-                // Validar MIME real
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
                 $mime = finfo_file($finfo, $_FILES['profile-photo']['tmp_name']);
                 finfo_close($finfo);
@@ -116,14 +101,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!array_key_exists($mime, $ALLOWED_MIME)) {
                     $errores[] = "Tipo de archivo no permitido. Solo JPG, PNG y GIF.";
                 } else {
-                    // preparar carpeta
                     if (!is_dir($UPLOAD_DIR)) {
                         if (!mkdir($UPLOAD_DIR, 0755, true)) {
                             $errores[] = "No se pudo crear la carpeta de uploads en el servidor.";
                         }
                     }
 
-                    // nombre único seguro
                     try {
                         $random = bin2hex(random_bytes(8));
                     } catch (Exception $e) {
@@ -131,21 +114,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     $ext = $ALLOWED_MIME[$mime];
                     $nuevo_nombre = time() . "_" . $random . "." . $ext;
-                    $ruta_fisica = $UPLOAD_DIR . $nuevo_nombre;      // ruta en disco
-                    $ruta_para_db = $UPLOAD_URL_PREFIX . $nuevo_nombre; // ruta que guardaremos en DB
+                    $ruta_fisica = $UPLOAD_DIR . $nuevo_nombre;    
+                    $ruta_para_db = $UPLOAD_URL_PREFIX . $nuevo_nombre; 
 
-                    // mover archivo
                     if (!is_uploaded_file($_FILES['profile-photo']['tmp_name'])) {
                         $errores[] = "Archivo subido inválido.";
                     } else {
                         if (move_uploaded_file($_FILES['profile-photo']['tmp_name'], $ruta_fisica)) {
-                            // opcional: permisos
+                           
                             @chmod($ruta_fisica, 0644);
                             $nueva_ruta_en_db = $ruta_para_db;
 
-                            // OPCIONAL: borrar foto anterior si existe (y si no es default)
+                         
                             if (!empty($usuario['foto']) && file_exists(__DIR__ . "/" . $usuario['foto'])) {
-                                // no forzamos error si no se puede borrar
                                 @unlink(__DIR__ . "/" . $usuario['foto']);
                             }
                         } else {
@@ -157,9 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // =========================
-    // 4) Si no hay errores: ejecutar updates (uno por campo)
-    // =========================
     if (empty($errores)) {
         $realizoCambio = false;
 
@@ -168,7 +146,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare("UPDATE usuarios SET email = ? WHERE id = ?");
             $stmt->execute([$email, $usuario_id]);
             $realizoCambio = true;
-            // actualizar variable local y sesion
             $usuario['email'] = $email;
             $_SESSION['usuario_email'] = $email;
         }

@@ -11,24 +11,23 @@ $usuario_id = $_SESSION['usuario_id'];
 $errores = [];
 $mensaje = "";
 
-// Obtener rol del usuario (para lógica admin)
+
 $stmtUser = $pdo->prepare("SELECT rol FROM usuarios WHERE id = ?");
 $stmtUser->execute([$usuario_id]);
 $userRow = $stmtUser->fetch(PDO::FETCH_ASSOC);
 $userRol = $userRow['rol'] ?? 'member';
 
-// --- Consultar todos los usuarios (solo admin) ---
+
 $usuarios = [];
 if ($userRol === 'admin') {
     $stmtUsuarios = $pdo->query("SELECT id, nombre FROM usuarios ORDER BY nombre ASC");
     $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// --- Consultar todas las etiquetas (antes del HTML) ---
 $stmtEtiquetas = $pdo->query("SELECT id, nombre, color FROM etiquetas ORDER BY nombre ASC");
 $etiquetas = $stmtEtiquetas->fetchAll(PDO::FETCH_ASSOC);
 
-// --- Consultar proyectos dependiendo de rol (admin = todos, else solo creados por el usuario) ---
+
 if ($userRol === 'admin') {
     $stmtProyectos = $pdo->query("SELECT id, nombre FROM proyectos ORDER BY nombre ASC");
     $proyectos = $stmtProyectos->fetchAll(PDO::FETCH_ASSOC);
@@ -38,7 +37,7 @@ if ($userRol === 'admin') {
     $proyectos = $stmtProyectos->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// --- CRUD TAREAS ---
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_tarea'])) {
     $titulo = trim($_POST['titulo'] ?? '');
     $descripcion = trim($_POST['descripcion'] ?? '');
@@ -102,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_tarea'])) {
     }
 }
 
-// Completar / Eliminar tarea
+
 if (isset($_GET['completar'])) {
     $id = intval($_GET['completar']);
     if ($userRol === 'admin') {
@@ -124,7 +123,7 @@ if (isset($_GET['eliminar'])) {
     }
 }
 
-// --- FILTROS Y BUSQUEDA ---
+
 $where = "WHERE t.parent_task_id IS NULL";
 $params = [];
 
@@ -163,7 +162,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $tareas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Datos para edición
+
 $tarea_editar = null;
 $etiquetas_tarea = [];
 if (isset($_GET['editar'])) {
@@ -184,7 +183,7 @@ if (isset($_GET['editar'])) {
     }
 }
 
-// --- CRUD SUBTAREAS ---
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_subtarea'])) {
     $titulo = trim($_POST['titulo'] ?? '');
     $parent_id = intval($_POST['parent_task_id'] ?? 0);
@@ -226,7 +225,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_subtarea'])) {
     }
 }
 
-// --- SUBIR ARCHIVOS ---
+
 $carpetaDestino = "uploads/";
 if (!is_dir($carpetaDestino)) {
     mkdir($carpetaDestino, 0755, true);

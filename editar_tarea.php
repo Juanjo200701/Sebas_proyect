@@ -10,7 +10,6 @@ if (!isset($_SESSION['usuario_id'])) {
 $usuario_id = $_SESSION['usuario_id'];
 $id = intval($_GET['id'] ?? 0);
 
-// Cargar la tarea
 $stmt = $pdo->prepare("SELECT * FROM tareas WHERE id=?");
 $stmt->execute([$id]);
 $tarea = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -19,7 +18,6 @@ if (!$tarea) {
     die("Tarea no encontrada");
 }
 
-// Actualizar tarea
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $titulo = trim($_POST['titulo']);
     $estado = $_POST['estado'] ?? 'todo';
