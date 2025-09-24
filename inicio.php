@@ -41,6 +41,7 @@ if ($userRol === 'admin') {
 // --- CRUD TAREAS ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_tarea'])) {
     $titulo = trim($_POST['titulo'] ?? '');
+    $descripcion = trim($_POST['descripcion'] ?? '');
     $proyecto_id = intval($_POST['proyecto_id'] ?? 0);
     $etiquetas_sel = $_POST['etiquetas'] ?? [];
     $asignado_id = ($userRol === 'admin') ? intval($_POST['asignado_id'] ?? 0) : $usuario_id;
@@ -52,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_tarea'])) {
     } elseif ($userRol === 'admin' && $asignado_id <= 0) {
         $errores[] = "Debes seleccionar el usuario asignado.";
     } else {
-        $stmt = $pdo->prepare("INSERT INTO tareas (titulo, creador_id, asignado_id, estado, proyecto_id) VALUES (?, ?, ?, 'todo', ?)");
-        $stmt->execute([$titulo, $usuario_id, $asignado_id, $proyecto_id]);
+        $stmt = $pdo->prepare("INSERT INTO tareas (titulo, descripcion, creador_id, asignado_id, estado, proyecto_id) VALUES (?, ?, ?, ?, 'todo', ?)");
+        $stmt->execute([$titulo, $descripcion, $usuario_id, $asignado_id, $proyecto_id]);
         $tarea_id = $pdo->lastInsertId();
 
         foreach ($etiquetas_sel as $etiqueta_id) {
@@ -66,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_tarea'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_tarea'])) {
     $id = intval($_POST['tarea_id']);
     $titulo = trim($_POST['titulo'] ?? '');
+    $descripcion = trim($_POST['descripcion'] ?? '');
     $proyecto_id = intval($_POST['proyecto_id'] ?? 0);
     $etiquetas_sel = $_POST['etiquetas'] ?? [];
     $asignado_id = ($userRol === 'admin') ? intval($_POST['asignado_id'] ?? 0) : $usuario_id;
@@ -83,13 +85,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_tarea'])) {
         $errores[] = "Debes seleccionar el usuario asignado.";
     } elseif ($fecha_vencimiento && strtotime($fecha_vencimiento) < strtotime(date('Y-m-d'))) {
         $errores[] = "La fecha de vencimiento no puede ser anterior a hoy.";
-    }else {
+    } else {
         if ($userRol === 'admin') {
-            $stmt = $pdo->prepare("UPDATE tareas SET titulo=?, proyecto_id=?, asignado_id=?, fecha_vencimiento=? WHERE id=?");
-            $stmt->execute([$titulo, $proyecto_id, $asignado_id, $fecha_vencimiento, $id]);
+            $stmt = $pdo->prepare("UPDATE tareas SET titulo=?, descripcion=?, proyecto_id=?, asignado_id=?, fecha_vencimiento=? WHERE id=?");
+            $stmt->execute([$titulo, $descripcion, $proyecto_id, $asignado_id, $fecha_vencimiento, $id]);
         } else {
-            $stmt = $pdo->prepare("UPDATE tareas SET titulo=?, proyecto_id=?, fecha_vencimiento=? WHERE id=? AND asignado_id=?");
-            $stmt->execute([$titulo, $proyecto_id, $fecha_vencimiento, $id, $usuario_id]);
+            $stmt = $pdo->prepare("UPDATE tareas SET titulo=?, descripcion=?, proyecto_id=?, fecha_vencimiento=? WHERE id=? AND asignado_id=?");
+            $stmt->execute([$titulo, $descripcion, $proyecto_id, $fecha_vencimiento, $id, $usuario_id]);
         }
 
         $pdo->prepare("DELETE FROM tarea_etiqueta WHERE tarea_id=?")->execute([$id]);
@@ -309,6 +311,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
       background: #eaeaea;
       font-style: italic;
     }
+    .descripcion-tarea {
+      font-size: 1rem;
+      color: #5a5a5aff;
+      margin: 8px 0 0 0;
+      padding: 0 0 0 0;
+      white-space: pre-line;
+    }
   </style>
 </head>
 <body>
@@ -341,6 +350,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
     <div class="form-group">
       <label for="titulo">Título:</label>
       <input type="text" id="titulo" name="titulo" required value="<?= htmlspecialchars($tarea_editar['titulo']) ?>" />
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción:</label>
+      <textarea id="descripcion" name="descripcion" rows="3" style="width:100%;"><?= htmlspecialchars($tarea_editar['descripcion'] ?? '') ?></textarea>
     </div>
 
     <?php if ($userRol === 'admin'): ?>
@@ -384,6 +398,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
     <div class="form-group">
       <label for="fecha_vencimiento">Fecha de vencimiento:</label>
       <input type="date" id="fecha_vencimiento" name="fecha_vencimiento"
+        min="<?= date('Y-m-d') ?>"
         value="<?= htmlspecialchars($tarea_editar['fecha_vencimiento'] ?? '') ?>">
     </div>
 
@@ -396,6 +411,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
     <div class="form-group">
       <label for="titulo">Título:</label>
       <input type="text" id="titulo" name="titulo" placeholder="Nueva Tarea" />
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción:</label>
+      <textarea id="descripcion" name="descripcion" rows="3" style="width:100%;"></textarea>
     </div>
 
     <?php if ($userRol === 'admin'): ?>
@@ -489,6 +509,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["subir_archivo"])) {
         <li class="task<?= $tarea['estado'] === 'done' ? ' completed' : '' ?>">
           <div class="task-text">
             <?= htmlspecialchars($tarea['titulo']) ?>
+            <?php if (!empty($tarea['descripcion'])): ?>
+              <div class="descripcion-tarea"><?= htmlspecialchars($tarea['descripcion']) ?></div>
+            <?php endif; ?>
             <div style="font-size:0.9rem;color:#666;margin-top:6px;">
               Proyecto: <?= htmlspecialchars($tarea['proyecto_nombre'] ?? 'Sin proyecto') ?>
               <br>
